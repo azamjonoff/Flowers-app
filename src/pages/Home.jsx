@@ -11,6 +11,8 @@ import { getFlowers, refreshToken } from "../request";
 import { toast } from "sonner";
 
 //components
+import AddNewItemModal from "../components/AddNewItemModal";
+
 // table
 import {
   Table,
@@ -28,6 +30,8 @@ import { Button } from "../components/ui/button";
 // icon
 import { UpdateIcon } from "@radix-ui/react-icons";
 import { PlusIcon } from "lucide-react";
+
+// lib
 import { getFormData } from "../lib/my-utils";
 
 function Home() {
@@ -36,6 +40,7 @@ function Home() {
   const user = useAppStore((state) => state.user);
   const setUser = useAppStore((state) => state.setUser);
   const setFlowers = useAppStore((state) => state.setFlowers);
+  const setAddItemModal = useAppStore((state) => state.setAddItemModal);
 
   useEffect(() => {
     setLoading(true);
@@ -58,56 +63,54 @@ function Home() {
       .finally(() => setLoading(false));
   }, [user]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const result = getFormData(e.target);
-  };
-
   return (
-    <div className="base-container">
-      <div className="flex justify-between items-center my-3">
-        <h2 className="h2">Dashboard</h2>
-        <Button className="flex items-center gap-2">
-          Add <PlusIcon />
-        </Button>
+    <>
+      <div className="base-container">
+        <div className="flex justify-between items-center my-3">
+          <h2 className="h2">Dashboard</h2>
+          <Button className="flex items-center gap-2" onClick={setAddItemModal}>
+            Add <PlusIcon />
+          </Button>
+        </div>
+        <Table className="relative h-screen">
+          {loading ? (
+            <TableCaption className="flex items-center gap-2 absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-black font-medium">
+              Yuklanmoqda... <UpdateIcon className="animate-spin" />
+            </TableCaption>
+          ) : (
+            <TableCaption>Information about flowers</TableCaption>
+          )}
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">ID</TableHead>
+              <TableHead>Flower name</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Color</TableHead>
+              <TableHead className="text-right">Price</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {flowers?.map(({ name, id, color, category, price }) => {
+              return (
+                <TableRow key={id}>
+                  <TableCell className="font-medium">{id}</TableCell>
+                  <TableCell>{name}</TableCell>
+                  <TableCell>{category}</TableCell>
+                  <TableCell>
+                    <span
+                      style={{ backgroundColor: color }}
+                      className="block w-3 h-3 rounded-full border shadow-xl text-center"
+                    ></span>
+                  </TableCell>
+                  <TableCell className="text-right">{price}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
-      <Table className="relative h-screen">
-        {loading ? (
-          <TableCaption className="flex items-center gap-2 absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-black font-medium">
-            Yuklanmoqda... <UpdateIcon className="animate-spin" />
-          </TableCaption>
-        ) : (
-          <TableCaption>Information about flowers</TableCaption>
-        )}
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">ID</TableHead>
-            <TableHead>Flower name</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Color</TableHead>
-            <TableHead className="text-right">Price</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {flowers?.map(({ name, id, color, category, price }) => {
-            return (
-              <TableRow key={id}>
-                <TableCell className="font-medium">{id}</TableCell>
-                <TableCell>{name}</TableCell>
-                <TableCell>{category}</TableCell>
-                <TableCell>
-                  <span
-                    style={{ backgroundColor: color }}
-                    className="block w-3 h-3 rounded-full border shadow-xl text-center"
-                  ></span>
-                </TableCell>
-                <TableCell className="text-right">{price}</TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </div>
+      <AddNewItemModal />
+    </>
   );
 }
 

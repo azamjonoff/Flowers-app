@@ -7,14 +7,25 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-//
+//components
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
+import SelectCategory from "./SelectCategory";
+
+// lib
+import { useAppStore } from "../lib/zustand";
 
 function AddNewItemModal() {
+  const addItemModal = useAppStore((state) => state.addItemModal);
+  const setAddItemModal = useAppStore((state) => state.setAddItemModal);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const result = getFormData(e.target);
+  };
+
   return (
-    <Dialog>
-      {/* <DialogTrigger></DialogTrigger> */}
+    <Dialog open={addItemModal} onOpenChange={setAddItemModal}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add information</DialogTitle>
@@ -22,7 +33,24 @@ function AddNewItemModal() {
         <form onSubmit={handleSubmit}>
           <div>
             <Label htmlFor="name">Flower name*</Label>
-            <Input id="name" placeholder="Enter flower name" name="name" />
+            <Input
+              id="name"
+              placeholder="Enter flower name"
+              name="name"
+              autoComplete="off"
+            />
+          </div>
+          <div>
+            <Label htmlFor="price">Flower price*</Label>
+            <Input
+              id="price"
+              placeholder="Enter flower price"
+              name="price"
+              autoComplete="off"
+            />
+          </div>
+          <div>
+            <SelectCategory />
           </div>
         </form>
       </DialogContent>

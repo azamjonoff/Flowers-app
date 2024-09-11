@@ -8,4 +8,12 @@ export function getFormData(form) {
   return myObj;
 }
 
+export const collectCategory = (categories) => {
+  const result = [];
+  for (const { category } of categories) {
+    result.push(category);
+  }
+  return Array.from(new Set(result));
+};
+
 export const baseUrl = "https://json-api.uz/api/project/flowers-with-admin";
