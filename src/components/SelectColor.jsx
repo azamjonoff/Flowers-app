@@ -32,16 +32,27 @@ function SelectColor() {
         onOpenChange={setOpen}
       >
         <SelectTrigger className="w-[180px] relative">
-          <SelectValue placeholder="Select color">{value}</SelectValue>
+          <SelectValue placeholder="Select color">
+            <div className="flex items-center gap-2">
+              <span
+                style={{ backgroundColor: value }}
+                className="inline-block rounded-full inset-0 h-4 w-4 hover:border hover:border-black"
+              ></span>
+              {value.toLowerCase()}
+            </div>
+          </SelectValue>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="!h-[200px] overflow-y-auto">
           {collectItem(flowers, "color").map((color) => {
             return (
-              <SelectItem className="relative" key={color} value={color}>
-                <span
-                  style={{ backgroundColor: color }}
-                  className="absolute inset-0 h-full w-full hover:border hover:border-black"
-                ></span>
+              <SelectItem key={color} value={color}>
+                <div className="flex items-center gap-2">
+                  <span
+                    style={{ backgroundColor: color }}
+                    className="inline-block rounded-full inset-0 h-4 w-4 hover:border hover:border-black"
+                  ></span>
+                  <span className="font-medium lowercase">{color}</span>
+                </div>
               </SelectItem>
             );
           })}

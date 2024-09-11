@@ -15,6 +15,7 @@ import SelectCategory from "./SelectCategory";
 // lib
 import { useAppStore } from "../lib/zustand";
 import SelectColor from "./SelectColor";
+import { SelectCountry } from "./SelectCountry";
 
 function AddNewItemModal() {
   const addItemModal = useAppStore((state) => state.addItemModal);
@@ -53,6 +54,9 @@ function AddNewItemModal() {
           <div className="flex justify-between items-center mt-2">
             <SelectCategory />
             <SelectColor />
+          </div>
+          <div>
+            <SelectCountry />
           </div>
         </form>
       </DialogContent>

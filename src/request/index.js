@@ -25,9 +25,9 @@ export async function postData(data) {
     body: JSON.stringify(data),
   });
 
-  if (res.status === 200 || res.status === 201) return await res.json();
   if (res.status === 400)
     throw new Error("Username or password is not correct");
+  if (res.status === 200 || res.status === 201) return await res.json();
   else throw new Error("Something went wrong");
 }
 

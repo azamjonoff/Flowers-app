@@ -28,7 +28,7 @@ function SelectCategory() {
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select category" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="!h-[200px] overflow-y-auto">
           {collectItem(flowers, "category").map((category) => {
             return (
               <SelectItem key={category} value={category}>
