@@ -4,7 +4,7 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 
 // lib
-import { getFormData } from "../lib/utils";
+import { getFormData } from "../lib/my-utils";
 import { postData } from "../request";
 
 // react

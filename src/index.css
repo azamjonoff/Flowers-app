@@ -57,8 +57,8 @@
     --chart-5: 340 75% 55%;
   }
 }
-@import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;800;900&display=swap);
 @layer base {
+  @import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;800;900&display=swap);
   * {
     @apply border-border;
   }
@@ -66,10 +66,18 @@
     font-family: "Montserrat", sans-serif;
     @apply bg-background text-foreground;
   }
-}
 
-@layer components {
-  .container {
-    @apply max-w-[1200px] mx-auto;
+  .base-container {
+    @apply container mx-auto px-5;
+  }
+
+  .h1 {
+    @apply text-4xl font-extrabold tracking-tight lg:text-5xl;
+  }
+  .h2 {
+    @apply text-3xl font-semibold tracking-tight;
+  }
+  .h3 {
+    @apply text-2xl font-semibold tracking-tight;
   }
 }

@@ -1,5 +1,5 @@
 // lib
-import { baseUrl } from "../lib/utils";
+import { baseUrl } from "../lib/my-utils";
 
 // refresh-token
 export async function refreshToken(token) {
@@ -8,12 +8,11 @@ export async function refreshToken(token) {
     headers: {
       "content-type": "application/json",
     },
-    body: JSON.stringify({ token }),
+    body: JSON.stringify({ refresh_token: token }),
   });
 
   if (res.status === 200 || res.status === 201) return await res.json();
-  if (res.status === 400) throw new Error("Error");
-  else throw new Error("Something went wrong");
+  if (res.status === 403) throw new Error(403);
 }
 
 // admin post
@@ -41,11 +40,7 @@ export async function getFlowers(token) {
     },
   });
 
-  if (res.status === 403) {
-    const result = await refreshToken(token);
-    if (result.status === 403) {
-    }
-  }
+  if (res.status === 403) throw new Error(403);
   if (res.status === 200 || res.status === 201) return await res.json();
   else throw new Error("Something went wrong");
 }

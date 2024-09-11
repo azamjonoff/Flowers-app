@@ -1,41 +1,113 @@
 // react
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // lib
 import { useAppStore } from "../lib/zustand";
 
 // request
-import { getFlowers } from "../request";
+import { getFlowers, refreshToken } from "../request";
 
 // sonner
 import { toast } from "sonner";
 
+//components
+// table
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+// btn
+import { Button } from "../components/ui/button";
+
+// icon
+import { UpdateIcon } from "@radix-ui/react-icons";
+import { PlusIcon } from "lucide-react";
+import { getFormData } from "../lib/my-utils";
+
 function Home() {
-  const { flowers } = useAppStore((state) => state.flowers);
-  const { user } = useAppStore((state) => state.user);
+  const [loading, setLoading] = useState(false);
+  const flowers = useAppStore((state) => state.flowers);
+  const user = useAppStore((state) => state.user);
+  const setUser = useAppStore((state) => state.setUser);
+  const setFlowers = useAppStore((state) => state.setFlowers);
+
   useEffect(() => {
-    getFlowers(user.access_token)
-      .then((res) => console.log(res))
-      .catch(({ message }) => toast.error(message));
-  }, []);
+    setLoading(true);
+    getFlowers(user?.access_token)
+      .then(({ data }) => {
+        setFlowers(data);
+      })
+      .catch(({ message }) => {
+        if (message === "403") {
+          refreshToken(user?.refresh_token)
+            .then(({ access_token }) => {
+              setUser({ ...user, access_token });
+            })
+            .catch(() => {
+              toast.info("Please log in again!");
+              setUser(null);
+            });
+        }
+      })
+      .finally(() => setLoading(false));
+  }, [user]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const result = getFormData(e.target);
+  };
 
   return (
-    <section className="py-10">
-      <div className="container">
-        <h1 className="text-center text-3xl font-bold">Our Flowers</h1>
-        <div>
-          {flowers
-            ? flowers.map((flower) => {
-                return (
-                  <div key={flower.id}>
-                    <h1>{flower.name}</h1>
-                  </div>
-                );
-              })
-            : "There is no flowers"}
-        </div>
+    <div className="base-container">
+      <div className="flex justify-between items-center my-3">
+        <h2 className="h2">Dashboard</h2>
+        <Button className="flex items-center gap-2">
+          Add <PlusIcon />
+        </Button>
       </div>
-    </section>
+      <Table className="relative h-screen">
+        {loading ? (
+          <TableCaption className="flex items-center gap-2 absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-black font-medium">
+            Yuklanmoqda... <UpdateIcon className="animate-spin" />
+          </TableCaption>
+        ) : (
+          <TableCaption>Information about flowers</TableCaption>
+        )}
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">ID</TableHead>
+            <TableHead>Flower name</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Color</TableHead>
+            <TableHead className="text-right">Price</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {flowers?.map(({ name, id, color, category, price }) => {
+            return (
+              <TableRow key={id}>
+                <TableCell className="font-medium">{id}</TableCell>
+                <TableCell>{name}</TableCell>
+                <TableCell>{category}</TableCell>
+                <TableCell>
+                  <span
+                    style={{ backgroundColor: color }}
+                    className="block w-3 h-3 rounded-full border shadow-xl text-center"
+                  ></span>
+                </TableCell>
+                <TableCell className="text-right">{price}</TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 

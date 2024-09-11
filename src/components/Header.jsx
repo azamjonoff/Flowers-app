@@ -1,7 +1,7 @@
 function Header() {
   return (
     <header>
-      <div className="container">
+      <div className="base-container">
         <h1>Header</h1>
       </div>
     </header>
