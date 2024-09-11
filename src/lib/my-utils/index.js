@@ -8,10 +8,10 @@ export function getFormData(form) {
   return myObj;
 }
 
-export const collectCategory = (categories) => {
+export const collectItem = (array, item) => {
   const result = [];
-  for (const { category } of categories) {
-    result.push(category);
+  for (const obj of array) {
+    result.push(obj[item]);
   }
   return Array.from(new Set(result));
 };

@@ -14,6 +14,7 @@ import SelectCategory from "./SelectCategory";
 
 // lib
 import { useAppStore } from "../lib/zustand";
+import SelectColor from "./SelectColor";
 
 function AddNewItemModal() {
   const addItemModal = useAppStore((state) => state.addItemModal);
@@ -40,7 +41,7 @@ function AddNewItemModal() {
               autoComplete="off"
             />
           </div>
-          <div>
+          <div className="mt-2">
             <Label htmlFor="price">Flower price*</Label>
             <Input
               id="price"
@@ -49,8 +50,9 @@ function AddNewItemModal() {
               autoComplete="off"
             />
           </div>
-          <div>
+          <div className="flex justify-between items-center mt-2">
             <SelectCategory />
+            <SelectColor />
           </div>
         </form>
       </DialogContent>

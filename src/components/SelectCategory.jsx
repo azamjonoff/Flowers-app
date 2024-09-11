@@ -1,5 +1,5 @@
 // lib
-import { collectCategory } from "../lib/my-utils";
+import { collectItem } from "../lib/my-utils";
 import { useAppStore } from "../lib/zustand";
 
 // components
@@ -10,24 +10,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "./ui/label";
+import { useState } from "react";
 
 function SelectCategory() {
+  const [open, setOpen] = useState(false);
   const flowers = useAppStore((state) => state.flowers);
+
+  const handleFocus = () => {
+    setOpen(!open);
+  };
+
   return (
-    <Select>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select category" />
-      </SelectTrigger>
-      <SelectContent>
-        {collectCategory(flowers).map((category) => {
-          return (
-            <SelectItem key={category} value={category}>
-              {category}
-            </SelectItem>
-          );
-        })}
-      </SelectContent>
-    </Select>
+    <div>
+      <Label onClick={handleFocus}>Select category*</Label>
+      <Select open={open} onOpenChange={setOpen}>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Select category" />
+        </SelectTrigger>
+        <SelectContent>
+          {collectItem(flowers, "category").map((category) => {
+            return (
+              <SelectItem key={category} value={category}>
+                {category}
+              </SelectItem>
+            );
+          })}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
 
