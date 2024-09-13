@@ -11,11 +11,14 @@ import {
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import SelectCategory from "./SelectCategory";
+import { Textarea } from "./ui/textarea";
 
 // lib
 import { useAppStore } from "../lib/zustand";
 import SelectColor from "./SelectColor";
 import { SelectCountry } from "./SelectCountry";
+import LifeTime from "./LifeTime";
+import UploadImage from "./UploadImage";
 
 function AddNewItemModal() {
   const addItemModal = useAppStore((state) => state.addItemModal);
@@ -55,9 +58,28 @@ function AddNewItemModal() {
             <SelectCategory />
             <SelectColor />
           </div>
-          <div>
+          <div className="my-3">
             <SelectCountry />
           </div>
+          <div className="grid w-full gap-1.5">
+            <Label htmlFor="summary">About flower*</Label>
+            <Textarea
+              placeholder="Enter information about flowers..."
+              id="summary"
+            />
+          </div>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="smell">Smell*</Label>
+            <Input
+              type="text"
+              id="smell"
+              placeholder="Enter the scent of the flower"
+            />
+          </div>
+          <div className="my-3">
+            <LifeTime />
+          </div>
+          <UploadImage />
         </form>
       </DialogContent>
     </Dialog>

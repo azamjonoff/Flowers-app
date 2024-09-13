@@ -17,3 +17,4 @@ export const collectItem = (array, item) => {
 };
 
 export const baseUrl = "https://json-api.uz/api/project/flowers-with-admin";
+export const periods = ["kun", "oy", "yil"];
