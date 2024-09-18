@@ -37,31 +37,31 @@ import { getFormData } from "../lib/my-utils";
 function Home() {
   const [loading, setLoading] = useState(false);
   const flowers = useAppStore((state) => state.flowers);
-  const user = useAppStore((state) => state.user);
-  const setUser = useAppStore((state) => state.setUser);
+  const admin = useAppStore((state) => state.admin);
+  const setAdmin = useAppStore((state) => state.setAdmin);
   const setFlowers = useAppStore((state) => state.setFlowers);
   const setAddItemModal = useAppStore((state) => state.setAddItemModal);
 
   useEffect(() => {
     setLoading(true);
-    getFlowers(user?.access_token)
+    getFlowers(admin?.access_token)
       .then(({ data }) => {
         setFlowers(data);
       })
       .catch(({ message }) => {
         if (message === "403") {
-          refreshToken(user?.refresh_token)
+          refreshToken(admin?.refresh_token)
             .then(({ access_token }) => {
-              setUser({ ...user, access_token });
+              setAdmin({ ...admin, access_token });
             })
             .catch(() => {
               toast.info("Please log in again!");
-              setUser(null);
+              setAdmin(null);
             });
         }
       })
       .finally(() => setLoading(false));
-  }, [user]);
+  }, [admin]);
 
   return (
     <>

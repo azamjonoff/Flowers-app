@@ -24,7 +24,7 @@ function SelectCategory() {
   return (
     <div>
       <Label onClick={handleFocus}>Select category*</Label>
-      <Select open={open} onOpenChange={setOpen}>
+      <Select open={open} onOpenChange={setOpen} name="category">
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select category" />
         </SelectTrigger>

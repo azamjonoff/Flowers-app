@@ -1,23 +1,140 @@
+import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { Button, buttonVariants } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PlusCircledIcon, PlusIcon, UpdateIcon } from "@radix-ui/react-icons";
+import { useEffect, useRef, useState } from "react";
+import { uploadImage } from "../request";
+import { toast } from "sonner";
+import { allowImageSize } from "../lib/my-utils";
+import DefaultImage from "../../faviconimages/android-chrome-512x512.png";
 
 function UploadImage() {
+  const [value, setValue] = useState(DefaultImage);
+  const urlInput = useRef(null);
+
+  const handleUploadImage = (image, type = "local") => {
+    if (type === "url") {
+      if (image !== value) {
+        toast.loading("Image uploading...");
+        setValue(image);
+      } else {
+        toast.info("This image already uploaded");
+      }
+    } else {
+      if (image.size >= allowImageSize) {
+        toast.error("Image size up to 5MB");
+      } else {
+        toast.loading("Image uploading...");
+        uploadImage(image)
+          .then((res) => {
+            setValue(res);
+          })
+          .catch(({ message }) => toast.error(message));
+        // toast.promise(uploadImage(image), {
+        //   loading: "Image uploading...",
+        //   success: (url) => {
+        //     setValue(url);
+        //     return `Image successfully added`;
+        //   },
+        //   error: ({ message }) => message,
+        // });
+      }
+    }
+  };
+
+  useEffect(() => {
+    console.log(value);
+
+    setValue(DefaultImage);
+  }, []);
+
   return (
     <div className="my-3 w-full">
+      <select name="imgUrl" className="sr-only">
+        <option value={value}></option>
+      </select>
       <Label>Upload image*</Label>
-      <Tabs defaultValue="account" className="w-full">
+      <Tabs defaultValue="default" className="w-full">
         <TabsList className="w-full">
-          <TabsTrigger className="w-full" value="account">
-            Account
+          <TabsTrigger className="w-full" value="local">
+            Local
           </TabsTrigger>
-          <TabsTrigger className="w-full" value="password">
-            Password
+          <TabsTrigger className="w-full" value="url">
+            URL
+          </TabsTrigger>
+          <TabsTrigger
+            onClick={() => setValue(DefaultImage)}
+            className="w-full"
+            value="default"
+          >
+            Default
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="account">
-          Make changes to your account here.
+        <TabsContent value="local">
+          <Label>
+            <span
+              className={`${buttonVariants({ variant: "outline" })} w-full`}
+            >
+              {!value ? <PlusCircledIcon /> : <UpdateIcon />}
+            </span>
+            <Input
+              onChange={({ target: { files } }) => handleUploadImage(files[0])}
+              className="sr-only"
+              type="file"
+              placeholder="Enter your local photo"
+              accept="image/*"
+            />
+          </Label>
         </TabsContent>
-        <TabsContent value="password">Change your password here.</TabsContent>
+        <TabsContent value="url">
+          <Label htmlFor="url">URL</Label>
+          <div className="flex gap-5">
+            <Input
+              ref={urlInput}
+              type="url"
+              id="url"
+              defaultValue={
+                value && value !== "/faviconimages/android-chrome-512x512.png"
+                  ? value
+                  : ""
+              }
+              placeholder="Enter url"
+              onChange={({ target: { value } }) => {
+                console.log("inputValue", value);
+              }}
+            />
+            <Button
+              type="button"
+              onClick={() => handleUploadImage(urlInput?.current.value, "url")}
+            >
+              <PlusIcon />
+            </Button>
+          </div>
+        </TabsContent>
+        <TabsContent value="default">
+          <Button
+            onClick={() => setValue(DefaultImage)}
+            variant="secondary"
+            className="w-full"
+          >
+            <span>Default image</span>
+            <PlusIcon />
+          </Button>
+        </TabsContent>
+        {value && (
+          <img
+            onLoad={() => {
+              toast.dismiss();
+              toast.success("Image successfully added");
+            }}
+            onError={() => setValue(DefaultImage)}
+            src={value}
+            alt="Uploaded image"
+            height="250"
+            className="!h-[250px] !w-full object-cover mt-3 rounded-lg shadow-md "
+          />
+        )}
       </Tabs>
     </div>
   );

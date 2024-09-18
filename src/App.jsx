@@ -14,12 +14,12 @@ import { Home, Login, ErrorPage } from "./pages";
 import { useAppStore } from "./lib/zustand";
 
 function App() {
-  const user = useAppStore((state) => state.user);
+  const admin = useAppStore((state) => state.admin);
   const routes = createBrowserRouter([
     {
       path: "/",
       element: (
-        <ProtectedRoutes user={user}>
+        <ProtectedRoutes admin={admin}>
           <MainLayout />
         </ProtectedRoutes>
       ),
@@ -33,7 +33,7 @@ function App() {
     },
     {
       path: "/login",
-      element: user ? <Navigate to="/" /> : <Login />,
+      element: admin ? <Navigate to="/" /> : <Login />,
     },
   ]);
   return <RouterProvider router={routes} />;

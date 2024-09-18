@@ -44,3 +44,16 @@ export async function getFlowers(token) {
   if (res.status === 200 || res.status === 201) return await res.json();
   else throw new Error("Something went wrong");
 }
+
+// image local
+export async function uploadImage(image) {
+  const formData = new FormData();
+  formData.append("file", image);
+  const res = await fetch(baseUrl + "/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (res.status === 200 || res.status === 201) return res.text();
+  else throw new Error("Something went wrong");
+}

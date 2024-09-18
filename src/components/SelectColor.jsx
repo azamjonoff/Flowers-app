@@ -22,8 +22,12 @@ function SelectColor() {
     setOpen(!open);
   };
 
+  // console.log(value);
   return (
     <div>
+      <select className="sr-only" name="color">
+        <option value={value}></option>
+      </select>
       <Label onClick={handleFocus}>Select color*</Label>
       <Select
         value={value}

@@ -19,6 +19,8 @@ import SelectColor from "./SelectColor";
 import { SelectCountry } from "./SelectCountry";
 import LifeTime from "./LifeTime";
 import UploadImage from "./UploadImage";
+import { Button } from "./ui/button";
+import { getFormData, validation } from "../lib/my-utils";
 
 function AddNewItemModal() {
   const addItemModal = useAppStore((state) => state.addItemModal);
@@ -27,11 +29,12 @@ function AddNewItemModal() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const result = getFormData(e.target);
+    console.log(validation(result));
   };
 
   return (
     <Dialog open={addItemModal} onOpenChange={setAddItemModal}>
-      <DialogContent>
+      <DialogContent className="h-[500px] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add information</DialogTitle>
         </DialogHeader>
@@ -48,10 +51,12 @@ function AddNewItemModal() {
           <div className="mt-2">
             <Label htmlFor="price">Flower price*</Label>
             <Input
+              min="0"
               id="price"
               placeholder="Enter flower price"
               name="price"
               autoComplete="off"
+              type="number"
             />
           </div>
           <div className="flex justify-between items-center mt-2">
@@ -66,6 +71,7 @@ function AddNewItemModal() {
             <Textarea
               placeholder="Enter information about flowers..."
               id="summary"
+              name="summary"
             />
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -74,12 +80,20 @@ function AddNewItemModal() {
               type="text"
               id="smell"
               placeholder="Enter the scent of the flower"
+              name="smell"
             />
           </div>
           <div className="my-3">
             <LifeTime />
           </div>
           <UploadImage />
+
+          <div className="flex justify-between items-center mt-3">
+            <Button type="button" variant="secondary">
+              Cancel
+            </Button>
+            <Button type="submit">Submit</Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

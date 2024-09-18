@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { useAppStore } from "../lib/zustand";
 
 function Login() {
-  const setUser = useAppStore((state) => state.setUser);
+  const setAdmin = useAppStore((state) => state.setAdmin);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
@@ -23,7 +23,7 @@ function Login() {
     setLoading(true);
     postData(data)
       .then((res) => {
-        setUser(res);
+        setAdmin(res);
         toast.success("Welcome to Flowers App");
         setLoading(false);
       })
