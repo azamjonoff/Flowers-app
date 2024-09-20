@@ -18,22 +18,23 @@ export const collectItem = (array, item) => {
 
 export const validation = (obj) => {
   const errors = {
-    imgUrl: "Flower image failed to upload",
-    name: "Rose",
-    price: 12.99,
-    summary: "A classic symbol of love.",
-    smell: "Sweet",
-    category: "Blooming",
-    country: "France",
-    lifetime: "1 week",
-    color: "#FF0000",
+    imgUrl: "Flower image was not uploaded",
+    name: "Enter the flower's name",
+    price: "Enter the flower's price",
+    summary: "A description of the flower is required",
+    smell: "Flower's scent was not selected",
+    category: "Select a category for the flower",
+    country: "Country was not selected",
+    lifetime: "Flower's blooming time was not entered",
+    color: "A color for the flower was not selected",
   };
+
   let checker = false;
   let errorMessage = "";
   for (const key in obj) {
     if (obj[key].trim() === "") {
       checker = true;
-      errorMessage = key;
+      errorMessage = errors[key];
     }
   }
 
@@ -41,5 +42,5 @@ export const validation = (obj) => {
 };
 
 export const baseUrl = "https://json-api.uz/api/project/flowers-with-admin";
-export const periods = ["kun", "oy", "yil"];
 export const allowImageSize = 5_242_880;
+export const summaryLimit = 200;

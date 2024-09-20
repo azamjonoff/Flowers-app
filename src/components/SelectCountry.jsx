@@ -27,18 +27,48 @@ export function SelectCountry() {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
   let countries = flowers && collectItem(flowers, "country");
+  const button = React.useRef(null);
+
+  React.useEffect(() => {
+    let id = null;
+    function changer() {
+      if (open && button) {
+        id = setTimeout(() => {
+          const element = document.querySelector(
+            "[data-radix-popper-content-wrapper]"
+          );
+
+          const listbox = document.querySelector("[role='listbox']");
+          listbox.style.maxHeight = "170px";
+
+          element.style.width = button.current.offsetWidth + "px";
+        }, 1);
+      }
+    }
+
+    changer();
+
+    window.addEventListener("resize", changer);
+
+    return () => {
+      clearTimeout(id);
+      window.removeEventListener("resize", changer);
+      id = null;
+    };
+  }, [open, button]);
 
   return (
     flowers && (
-      <div className="flex flex-col gap-[6px]">
+      <div className="flex flex-col gap-[6px] w-full">
         <Label onClick={() => setOpen(!open)}>Select country*</Label>
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={setOpen} className="w-full">
           <PopoverTrigger asChild>
             <Button
+              ref={button}
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-[200px] justify-between"
+              className="w-full justify-between"
             >
               {value
                 ? countries.find((country) => country === value)
@@ -46,7 +76,7 @@ export function SelectCountry() {
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[200px] p-0">
+          <PopoverContent className="w-full p-0">
             <Command>
               <CommandInput placeholder="Search framework..." />
               <CommandList>

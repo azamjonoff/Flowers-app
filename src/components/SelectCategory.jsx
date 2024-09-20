@@ -22,10 +22,10 @@ function SelectCategory() {
   };
 
   return (
-    <div>
+    <div className="w-full">
       <Label onClick={handleFocus}>Select category*</Label>
       <Select open={open} onOpenChange={setOpen} name="category">
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Select category" />
         </SelectTrigger>
         <SelectContent className="!h-[200px] overflow-y-auto">

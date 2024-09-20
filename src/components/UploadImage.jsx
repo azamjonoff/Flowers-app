@@ -44,8 +44,6 @@ function UploadImage() {
   };
 
   useEffect(() => {
-    console.log(value);
-
     setValue(DefaultImage);
   }, []);
 
@@ -100,9 +98,6 @@ function UploadImage() {
                   : ""
               }
               placeholder="Enter url"
-              onChange={({ target: { value } }) => {
-                console.log("inputValue", value);
-              }}
             />
             <Button
               type="button"

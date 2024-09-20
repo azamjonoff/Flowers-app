@@ -24,7 +24,7 @@ function SelectColor() {
 
   // console.log(value);
   return (
-    <div>
+    <div className="w-full">
       <select className="sr-only" name="color">
         <option value={value}></option>
       </select>
@@ -35,7 +35,7 @@ function SelectColor() {
         open={open}
         onOpenChange={setOpen}
       >
-        <SelectTrigger className="w-[180px] relative">
+        <SelectTrigger className="w-full relative">
           <SelectValue placeholder="Select color">
             <div className="flex items-center gap-2">
               <span
