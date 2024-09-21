@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 // lib
 import { useAppStore } from "../lib/zustand";
+import { limit } from "../lib/my-utils";
 
 // request
 import { getFlowers, refreshToken } from "../request";
@@ -33,8 +34,11 @@ import { PlusIcon } from "lucide-react";
 
 // lib
 import { getFormData } from "../lib/my-utils";
+import MyPagination from "../components/MyPagination";
 
 function Home() {
+  const [skip, setSkip] = useState(0);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const flowers = useAppStore((state) => state.flowers);
   const admin = useAppStore((state) => state.admin);
@@ -44,8 +48,9 @@ function Home() {
 
   useEffect(() => {
     setLoading(true);
-    getFlowers(admin?.access_token)
-      .then(({ data }) => {
+    getFlowers(admin?.access_token, { skip, limit })
+      .then(({ data, total }) => {
+        setTotal(total);
         setFlowers(data);
       })
       .catch(({ message }) => {
@@ -61,25 +66,25 @@ function Home() {
         }
       })
       .finally(() => setLoading(false));
-  }, [admin]);
+  }, [admin, skip]);
 
   return (
     <>
-      <div className="base-container">
+      <div className="base-container py-5">
         <div className="flex justify-between items-center my-3">
           <h2 className="h2">Dashboard</h2>
-          <Button className="flex items-center gap-2" onClick={setAddItemModal}>
+          <Button
+            className="flex items-center gap-2"
+            onClick={setAddItemModal}
+            disabled={flowers ? false : true}
+          >
             Add <PlusIcon />
           </Button>
         </div>
-        <Table className="relative h-screen">
-          {loading ? (
-            <TableCaption className="flex items-center gap-2 absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-black font-medium">
-              Yuklanmoqda... <UpdateIcon className="animate-spin" />
-            </TableCaption>
-          ) : (
-            <TableCaption>Information about flowers</TableCaption>
-          )}
+        <Table>
+          <TableCaption>
+            {loading ? "Loading..." : "Information of flowers"}
+          </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">ID</TableHead>
@@ -108,6 +113,16 @@ function Home() {
             })}
           </TableBody>
         </Table>
+        {flowers && (
+          <div className="mt-5">
+            <MyPagination
+              setSkip={setSkip}
+              total={total}
+              pageCount={Math.ceil(total / limit)}
+              skip={skip}
+            />
+          </div>
+        )}
       </div>
       <AddNewItemModal />
     </>

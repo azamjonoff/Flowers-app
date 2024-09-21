@@ -9,8 +9,10 @@ export const useAppStore = create((set) => ({
     set(() => {
       if (admin) {
         localStorage.setItem("admin", JSON.stringify(admin));
-      } else localStorage.removeItem("admin");
-      return { admin };
+      } else {
+        localStorage.removeItem("admin");
+      }
+      return { admin, flowers: null };
     }),
   setFlowers: (flowers) => set(() => ({ flowers })),
   setAddItemModal: () =>

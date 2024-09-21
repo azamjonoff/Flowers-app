@@ -32,8 +32,8 @@ export async function postData(data) {
 }
 
 // flowers
-export async function getFlowers(token) {
-  const res = await fetch(baseUrl + "/flowers", {
+export async function getFlowers(token, { skip, limit }) {
+  const res = await fetch(baseUrl + `/flowers?skip=${skip}&limit=${limit}`, {
     headers: {
       "content-type": "application/json",
       Authorization: `Bearer ${token}`,

@@ -44,3 +44,4 @@ export const validation = (obj) => {
 export const baseUrl = "https://json-api.uz/api/project/flowers-with-admin";
 export const allowImageSize = 5_242_880;
 export const summaryLimit = 200;
+export const limit = 10;
