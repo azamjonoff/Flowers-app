@@ -36,7 +36,7 @@ export async function getFlowers(token, { skip, limit }, isFiltered) {
   const query = new URLSearchParams(`skip=${skip}&limit=${limit}`);
 
   if (isFiltered) {
-    for (const key of isFiltered) {
+    for (const key in isFiltered) {
       if (isFiltered[key]) {
         query.append(key, isFiltered[key]);
       }

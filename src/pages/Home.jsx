@@ -118,7 +118,7 @@ function Home() {
                 colors={collectItem(flowers, "color")}
                 handleEnableToFilter={handleEnableToFilter}
               />
-              <GeneralSearch />
+              <GeneralSearch handleEnableToFilter={handleEnableToFilter} />
             </div>
 
             <div className="flex gap-2">
