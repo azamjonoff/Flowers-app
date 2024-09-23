@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 // lib
 import { useAppStore } from "../lib/zustand";
-import { limit } from "../lib/my-utils";
+import { collectItem, limit } from "../lib/my-utils";
 
 // request
 import { getFlowers, refreshToken } from "../request";
@@ -13,6 +13,9 @@ import { toast } from "sonner";
 
 //components
 import AddNewItemModal from "../components/AddNewItemModal";
+import MyPagination from "../components/MyPagination";
+import FilterByCategory from "../components/FilterByCategory";
+import FilterByCountry from "../components/FilterByCountry";
 
 // table
 import {
@@ -29,14 +32,16 @@ import {
 import { Button } from "../components/ui/button";
 
 // icon
-import { UpdateIcon } from "@radix-ui/react-icons";
+import { GridIcon, SymbolIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { PlusIcon } from "lucide-react";
 
 // lib
 import { getFormData } from "../lib/my-utils";
-import MyPagination from "../components/MyPagination";
+import FilterByColor from "../components/FilterByColor";
 
 function Home() {
+  const [isFiltered, setIsFiltered] = useState(null);
+  const [enableToFilter, setEnableToFilter] = useState(true);
   const [skip, setSkip] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -46,9 +51,24 @@ function Home() {
   const setFlowers = useAppStore((state) => state.setFlowers);
   const setAddItemModal = useAppStore((state) => state.setAddItemModal);
 
+  function reset() {
+    setIsFiltered(null);
+    setEnableToFilter(true);
+  }
+
+  function handleFilter(e) {
+    e.preventDefault();
+    const result = getFormData(e.target);
+    setIsFiltered(result);
+  }
+
+  function handleEnableToFilter() {
+    setEnableToFilter(false);
+  }
+
   useEffect(() => {
     setLoading(true);
-    getFlowers(admin?.access_token, { skip, limit })
+    getFlowers(admin?.access_token, { skip, limit }, isFiltered)
       .then(({ data, total }) => {
         setTotal(total);
         setFlowers(data);
@@ -66,7 +86,7 @@ function Home() {
         }
       })
       .finally(() => setLoading(false));
-  }, [admin, skip]);
+  }, [admin, skip, isFiltered]);
 
   return (
     <>
@@ -81,6 +101,40 @@ function Home() {
             Add <PlusIcon />
           </Button>
         </div>
+
+        {flowers && (
+          <form onSubmit={handleFilter}>
+            <div className="grid grid-cols-3 mb-4">
+              <FilterByCategory
+                categories={collectItem(flowers, "category")}
+                handleEnableToFilter={handleEnableToFilter}
+              />
+              <FilterByCountry
+                countries={collectItem(flowers, "country")}
+                handleEnableToFilter={handleEnableToFilter}
+              />
+              <FilterByColor
+                colors={collectItem(flowers, "color")}
+                handleEnableToFilter={handleEnableToFilter}
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                disabled={enableToFilter}
+                onClick={reset}
+                type="button"
+              >
+                Clear Filter <SymbolIcon className="ml-2" />
+              </Button>
+              <Button type="submit" disabled={enableToFilter}>
+                Filtering <GridIcon className="ml-2" />
+              </Button>
+            </div>
+          </form>
+        )}
+
         <Table>
           <TableCaption>
             {loading ? "Loading..." : "Information of flowers"}

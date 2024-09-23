@@ -32,8 +32,18 @@ export async function postData(data) {
 }
 
 // flowers
-export async function getFlowers(token, { skip, limit }) {
-  const res = await fetch(baseUrl + `/flowers?skip=${skip}&limit=${limit}`, {
+export async function getFlowers(token, { skip, limit }, isFiltered) {
+  const query = new URLSearchParams(`skip=${skip}&limit=${limit}`);
+
+  if (isFiltered) {
+    for (const key of isFiltered) {
+      if (isFiltered[key]) {
+        query.append(key, isFiltered[key]);
+      }
+    }
+  }
+
+  const res = await fetch(baseUrl + "/flowers?" + query, {
     headers: {
       "content-type": "application/json",
       Authorization: `Bearer ${token}`,
