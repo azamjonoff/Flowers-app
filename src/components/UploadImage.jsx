@@ -7,10 +7,11 @@ import { useEffect, useRef, useState } from "react";
 import { uploadImage } from "../request";
 import { toast } from "sonner";
 import { allowImageSize } from "../lib/my-utils";
-import DefaultImage from "../../faviconimages/android-chrome-512x512.png";
 
 function UploadImage() {
-  const [value, setValue] = useState(DefaultImage);
+  const [value, setValue] = useState(
+    "https://i.postimg.cc/PqdD2X3M/flower.png"
+  );
   const urlInput = useRef(null);
 
   const handleUploadImage = (image, type = "local") => {
@@ -31,20 +32,12 @@ function UploadImage() {
             setValue(res);
           })
           .catch(({ message }) => toast.error(message));
-        // toast.promise(uploadImage(image), {
-        //   loading: "Image uploading...",
-        //   success: (url) => {
-        //     setValue(url);
-        //     return `Image successfully added`;
-        //   },
-        //   error: ({ message }) => message,
-        // });
       }
     }
   };
 
   useEffect(() => {
-    setValue(DefaultImage);
+    setValue("https://i.postimg.cc/PqdD2X3M/flower.png");
   }, []);
 
   return (
@@ -62,7 +55,7 @@ function UploadImage() {
             URL
           </TabsTrigger>
           <TabsTrigger
-            onClick={() => setValue(DefaultImage)}
+            onClick={() => setValue("https://i.postimg.cc/PqdD2X3M/flower.png")}
             className="w-full"
             value="default"
           >
@@ -109,7 +102,7 @@ function UploadImage() {
         </TabsContent>
         <TabsContent value="default">
           <Button
-            onClick={() => setValue(DefaultImage)}
+            onClick={() => setValue("https://i.postimg.cc/PqdD2X3M/flower.png")}
             variant="secondary"
             className="w-full"
           >
@@ -123,7 +116,7 @@ function UploadImage() {
               toast.dismiss();
               toast.success("Image successfully added");
             }}
-            onError={() => setValue(DefaultImage)}
+            onError={() => setValue("https://i.postimg.cc/PqdD2X3M/flower.png")}
             src={value}
             alt="Uploaded image"
             height="250"

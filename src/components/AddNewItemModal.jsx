@@ -22,8 +22,11 @@ import { Button } from "./ui/button";
 import { getFormData, validation } from "../lib/my-utils";
 import { toast } from "sonner";
 import Summary from "./Summary";
+import { refreshToken, sendFlower } from "../request";
 
 function AddNewItemModal() {
+  const admin = useAppStore((state) => state.admin);
+  const setAdmin = useAppStore((state) => state.setAdmin);
   const addItemModal = useAppStore((state) => state.addItemModal);
   const setAddItemModal = useAppStore((state) => state.setAddItemModal);
 
@@ -33,8 +36,26 @@ function AddNewItemModal() {
     const { checker, errorMessage } = validation(result);
     if (checker) {
       toast.warning(errorMessage);
+    } else {
+      sendFlower(admin?.access_token, result)
+        .then((res) => {
+          toast.success(res);
+        })
+        .catch(({ message }) => {
+          if (message === "403") {
+            refreshToken(admin?.refresh_token)
+              .then(({ access_token }) => {
+                setAdmin({ ...admin, access_token });
+              })
+              .catch(() => {
+                toast.info("Please login again");
+                setAdmin(null);
+              });
+          }
+          toast.error(message);
+        });
+      console.log(result);
     }
-    console.log(result);
   };
 
   return (

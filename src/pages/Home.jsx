@@ -16,6 +16,8 @@ import AddNewItemModal from "../components/AddNewItemModal";
 import MyPagination from "../components/MyPagination";
 import FilterByCategory from "../components/FilterByCategory";
 import FilterByCountry from "../components/FilterByCountry";
+import FilterByColor from "../components/FilterByColor";
+import GeneralSearch from "../components/GeneralSearch";
 
 // table
 import {
@@ -37,7 +39,6 @@ import { PlusIcon } from "lucide-react";
 
 // lib
 import { getFormData } from "../lib/my-utils";
-import FilterByColor from "../components/FilterByColor";
 
 function Home() {
   const [isFiltered, setIsFiltered] = useState(null);
@@ -104,7 +105,7 @@ function Home() {
 
         {flowers && (
           <form onSubmit={handleFilter}>
-            <div className="grid grid-cols-3 mb-4">
+            <div className="grid grid-cols-3 gap-y-4 mb-4">
               <FilterByCategory
                 categories={collectItem(flowers, "category")}
                 handleEnableToFilter={handleEnableToFilter}
@@ -117,6 +118,7 @@ function Home() {
                 colors={collectItem(flowers, "color")}
                 handleEnableToFilter={handleEnableToFilter}
               />
+              <GeneralSearch />
             </div>
 
             <div className="flex gap-2">

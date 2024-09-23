@@ -67,3 +67,20 @@ export async function uploadImage(image) {
   if (res.status === 200 || res.status === 201) return res.text();
   else throw new Error("Something went wrong");
 }
+
+// send flower
+export async function sendFlower(token, flower) {
+  const res = await fetch(baseUrl + "/flowers", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(flower),
+  });
+
+  if (res.status === 200 || res.status === 201)
+    return "Data added successfully.";
+  if (res.status === 403) throw new Error("403");
+  else throw new Error("Something went wrong");
+}
