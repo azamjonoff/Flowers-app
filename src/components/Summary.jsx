@@ -10,8 +10,10 @@ function Summary() {
   function writer(e) {
     if (!(e.target.value.length > summaryLimit)) {
       setValue(e.target.value);
-    } else toast.dismiss();
-    toast.warning(`You cannot enter more than ${summaryLimit} characters.`);
+    } else {
+      toast.dismiss();
+      toast.warning(`You cannot enter more than ${summaryLimit} characters.`);
+    }
   }
   return (
     <div className="flex flex-col">

@@ -23,12 +23,15 @@ import { getFormData, validation } from "../lib/my-utils";
 import { toast } from "sonner";
 import Summary from "./Summary";
 import { refreshToken, sendFlower } from "../request";
+import { useEffect, useState } from "react";
+import { UpdateIcon } from "@radix-ui/react-icons";
 
-function AddNewItemModal() {
+function AddNewItemModal({ sendingData, setSendingData }) {
   const admin = useAppStore((state) => state.admin);
   const setAdmin = useAppStore((state) => state.setAdmin);
   const addItemModal = useAppStore((state) => state.addItemModal);
   const setAddItemModal = useAppStore((state) => state.setAddItemModal);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,9 +40,19 @@ function AddNewItemModal() {
     if (checker) {
       toast.warning(errorMessage);
     } else {
-      sendFlower(admin?.access_token, result)
+      setSendingData(result);
+    }
+  };
+
+  useEffect(() => {
+    if (sendingData) {
+      setLoading(true);
+      sendFlower(admin?.access_token, sendingData)
         .then((res) => {
+          toast.dismiss();
           toast.success(res);
+          setSendingData(null);
+          setAddItemModal();
         })
         .catch(({ message }) => {
           if (message === "403") {
@@ -53,10 +66,10 @@ function AddNewItemModal() {
               });
           }
           toast.error(message);
-        });
-      console.log(result);
+        })
+        .finally(() => setLoading(false));
     }
-  };
+  }, [sendingData, admin]);
 
   return (
     <Dialog open={addItemModal} onOpenChange={setAddItemModal}>
@@ -118,7 +131,9 @@ function AddNewItemModal() {
             <Button type="button" variant="secondary" onClick={setAddItemModal}>
               Cancel
             </Button>
-            <Button type="submit">Submit</Button>
+            <Button disabled={loading} type="submit">
+              {loading ? <UpdateIcon className="animate-spin" /> : "Submit"}
+            </Button>
           </div>
         </form>
       </DialogContent>

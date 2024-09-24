@@ -41,6 +41,7 @@ import { PlusIcon } from "lucide-react";
 import { getFormData } from "../lib/my-utils";
 
 function Home() {
+  const [sendingData, setSendingData] = useState(null);
   const [isFiltered, setIsFiltered] = useState(null);
   const [enableToFilter, setEnableToFilter] = useState(true);
   const [skip, setSkip] = useState(0);
@@ -87,7 +88,7 @@ function Home() {
         }
       })
       .finally(() => setLoading(false));
-  }, [admin, skip, isFiltered]);
+  }, [admin, skip, isFiltered, sendingData]);
 
   return (
     <>
@@ -105,7 +106,7 @@ function Home() {
 
         {flowers && (
           <form onSubmit={handleFilter}>
-            <div className="grid grid-cols-3 gap-y-4 mb-4">
+            <div className="grid grid-cols-3 gap-y-4 mb-4 w-full">
               <FilterByCategory
                 categories={collectItem(flowers, "category")}
                 handleEnableToFilter={handleEnableToFilter}
@@ -118,10 +119,8 @@ function Home() {
                 colors={collectItem(flowers, "color")}
                 handleEnableToFilter={handleEnableToFilter}
               />
-              <GeneralSearch handleEnableToFilter={handleEnableToFilter} />
             </div>
-
-            <div className="flex gap-2">
+            <div className="flex gap-10 justify-center">
               <Button
                 variant="outline"
                 disabled={enableToFilter}
@@ -133,6 +132,9 @@ function Home() {
               <Button type="submit" disabled={enableToFilter}>
                 Filtering <GridIcon className="ml-2" />
               </Button>
+            </div>
+            <div className="flex justify-center mb-4">
+              <GeneralSearch handleEnableToFilter={handleEnableToFilter} />
             </div>
           </form>
         )}
@@ -180,7 +182,10 @@ function Home() {
           </div>
         )}
       </div>
-      <AddNewItemModal />
+      <AddNewItemModal
+        sendingData={sendingData}
+        setSendingData={setSendingData}
+      />
     </>
   );
 }

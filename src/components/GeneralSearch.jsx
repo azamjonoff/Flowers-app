@@ -6,9 +6,10 @@ import { Label } from "./ui/label";
 function GeneralSearch({ handleEnableToFilter }) {
   const [value, setValue] = useState("");
   return (
-    <div>
-      <Label htmlFor="search">Search</Label>
+    <div className="w-full flex flex-col items-center gap-2 my-4 justify-center">
+      <Label htmlFor="search">Searching</Label>
       <Input
+        className="max-w-96 w-full"
         value={value}
         onChange={({ target: { value } }) => {
           setValue(value);
@@ -16,8 +17,9 @@ function GeneralSearch({ handleEnableToFilter }) {
         }}
         name="search"
         id="search"
-        placeholder="Searching..."
+        placeholder="Not available yet"
         type="search"
+        disabled
       />
     </div>
   );

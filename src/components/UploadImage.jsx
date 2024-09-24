@@ -105,6 +105,7 @@ function UploadImage() {
             onClick={() => setValue("https://i.postimg.cc/PqdD2X3M/flower.png")}
             variant="secondary"
             className="w-full"
+            type="button"
           >
             <span>Default image</span>
             <PlusIcon />
