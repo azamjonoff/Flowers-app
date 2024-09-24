@@ -84,3 +84,19 @@ export async function sendFlower(token, flower) {
   if (res.status === 403) throw new Error("403");
   else throw new Error("Something went wrong");
 }
+
+// delete flower
+export async function deleteFlower(token, id) {
+  const res = await fetch(baseUrl + `/flowers/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (res.status === 200 || res.status === 201)
+    return "Data deleted successfully.";
+  if (res.status === 403) throw new Error("403");
+  else throw new Error("Something went wrong");
+}

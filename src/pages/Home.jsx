@@ -6,7 +6,7 @@ import { useAppStore } from "../lib/zustand";
 import { collectItem, limit } from "../lib/my-utils";
 
 // request
-import { getFlowers, refreshToken } from "../request";
+import { deleteFlower, getFlowers, refreshToken } from "../request";
 
 // sonner
 import { toast } from "sonner";
@@ -31,14 +31,28 @@ import {
 } from "@/components/ui/table";
 
 // btn
-import { Button } from "../components/ui/button";
+import { Button, buttonVariants } from "../components/ui/button";
 
 // icon
-import { GridIcon, SymbolIcon, UpdateIcon } from "@radix-ui/react-icons";
+import {
+  GridIcon,
+  Pencil1Icon,
+  SymbolIcon,
+  TrashIcon,
+  UpdateIcon,
+} from "@radix-ui/react-icons";
 import { PlusIcon } from "lucide-react";
 
 // lib
 import { getFormData } from "../lib/my-utils";
+
+// tooltip
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 function Home() {
   const [sendingData, setSendingData] = useState(null);
@@ -66,6 +80,11 @@ function Home() {
 
   function handleEnableToFilter() {
     setEnableToFilter(false);
+  }
+
+  function handleDelete(id) {
+    const deleteInfo = deleteFlower(admin?.access_token, id);
+    console.log(deleteInfo);
   }
 
   useEffect(() => {
@@ -120,7 +139,7 @@ function Home() {
                 handleEnableToFilter={handleEnableToFilter}
               />
             </div>
-            <div className="flex gap-10 justify-center">
+            <div className="flex gap-10 justify-end">
               <Button
                 variant="outline"
                 disabled={enableToFilter}
@@ -150,6 +169,7 @@ function Home() {
               <TableHead>Category</TableHead>
               <TableHead>Color</TableHead>
               <TableHead className="text-right">Price</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -166,6 +186,42 @@ function Home() {
                     ></span>
                   </TableCell>
                   <TableCell className="text-right">{price}</TableCell>
+                  <TableCell className="flex justify-end gap-3">
+                    <TooltipProvider delayDuration="0">
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <span
+                            className={buttonVariants({
+                              variant: "secondary",
+                              size: "icon",
+                            })}
+                          >
+                            <Pencil1Icon />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Edit this item</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider delayDuration="0">
+                      <Tooltip>
+                        <TooltipTrigger onClick={() => handleDelete(id)}>
+                          <span
+                            className={buttonVariants({
+                              variant: "destructive",
+                              size: "icon",
+                            })}
+                          >
+                            <TrashIcon />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Delete this item</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableCell>
                 </TableRow>
               );
             })}
