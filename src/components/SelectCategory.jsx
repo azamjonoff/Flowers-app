@@ -13,7 +13,7 @@ import {
 import { Label } from "./ui/label";
 import { useState } from "react";
 
-function SelectCategory() {
+function SelectCategory({ outsideCategory }) {
   const [open, setOpen] = useState(false);
   const flowers = useAppStore((state) => state.flowers);
 
@@ -24,7 +24,12 @@ function SelectCategory() {
   return (
     <div className="w-full">
       <Label onClick={handleFocus}>Select category*</Label>
-      <Select open={open} onOpenChange={setOpen} name="category">
+      <Select
+        defaultValue={outsideCategory && outsideCategory}
+        open={open}
+        onOpenChange={setOpen}
+        name="category"
+      >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select category" />
         </SelectTrigger>

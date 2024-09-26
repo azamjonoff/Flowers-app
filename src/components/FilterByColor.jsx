@@ -20,8 +20,8 @@ function FilterByColor({ colors, handleEnableToFilter }) {
     setOpen(!open);
   };
   return (
-    <div>
-      <div>
+    <>
+      <div className="w-full">
         <Label onClick={handleFocus} className="h1">
           Sorting by colors
         </Label>
@@ -33,8 +33,9 @@ function FilterByColor({ colors, handleEnableToFilter }) {
           }}
           onOpenChange={setOpen}
           open={open}
+          className="w-full"
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="By color">
               <div className="flex items-center gap-2">
                 <span
@@ -65,7 +66,7 @@ function FilterByColor({ colors, handleEnableToFilter }) {
           </SelectContent>
         </Select>
       </div>
-    </div>
+    </>
   );
 }
 

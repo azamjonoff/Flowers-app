@@ -13,11 +13,15 @@ import { Label } from "./ui/label";
 
 function FilterByCountry({ countries, handleEnableToFilter }) {
   return (
-    <div>
-      <div>
+    <>
+      <div className="w-full">
         <Label className="h1">Sorting by country</Label>
-        <Select name="country" onValueChange={handleEnableToFilter}>
-          <SelectTrigger className="w-[180px]">
+        <Select
+          name="country"
+          className="w-full"
+          onValueChange={handleEnableToFilter}
+        >
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="By countries" />
           </SelectTrigger>
           <SelectContent>
@@ -34,7 +38,7 @@ function FilterByCountry({ countries, handleEnableToFilter }) {
           </SelectContent>
         </Select>
       </div>
-    </div>
+    </>
   );
 }
 

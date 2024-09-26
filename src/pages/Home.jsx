@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 // lib
 import { useAppStore } from "../lib/zustand";
-import { collectItem, limit } from "../lib/my-utils";
+import { collectItem, findObj, limit } from "../lib/my-utils";
 
 // request
 import { deleteFlower, getFlowers, refreshToken } from "../request";
@@ -53,8 +53,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import EditFlower from "../components/EditFLower";
 
 function Home() {
+  const [editing, setEditing] = useState(null);
+  const [editedData, setEditedData] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deletedData, setDeletedData] = useState(null);
   const [sendingData, setSendingData] = useState(null);
   const [isFiltered, setIsFiltered] = useState(null);
   const [enableToFilter, setEnableToFilter] = useState(true);
@@ -66,6 +71,7 @@ function Home() {
   const setAdmin = useAppStore((state) => state.setAdmin);
   const setFlowers = useAppStore((state) => state.setFlowers);
   const setAddItemModal = useAppStore((state) => state.setAddItemModal);
+  const setEditModal = useAppStore((state) => state.setEditModal);
 
   function reset() {
     setIsFiltered(null);
@@ -83,10 +89,43 @@ function Home() {
   }
 
   function handleDelete(id) {
-    const deleteInfo = deleteFlower(admin?.access_token, id);
-    console.log(deleteInfo);
+    setDeletedData(id);
   }
 
+  function handleEdit(id) {
+    setEditModal();
+    const result = findObj(flowers, id);
+    setEditedData(result);
+  }
+
+  // Delete flower
+  useEffect(() => {
+    if (deletedData) {
+      setDeleteLoading(true);
+      deleteFlower(admin?.access_token, deletedData)
+        .then((res) => {
+          toast.dismiss();
+          toast.success(res);
+          setDeletedData(null);
+        })
+        .catch(({ message }) => {
+          if (message === "403") {
+            refreshToken(admin?.refresh_token)
+              .then(({ access_token }) => {
+                setAdmin({ ...admin, access_token });
+              })
+              .catch(() => {
+                toast.info("Please login again");
+                setAdmin(null);
+              });
+          }
+          toast.error(message);
+        })
+        .finally(() => setDeleteLoading(false));
+    }
+  }, [deletedData, admin]);
+
+  // get flowers
   useEffect(() => {
     setLoading(true);
     getFlowers(admin?.access_token, { skip, limit }, isFiltered)
@@ -107,7 +146,7 @@ function Home() {
         }
       })
       .finally(() => setLoading(false));
-  }, [admin, skip, isFiltered, sendingData]);
+  }, [admin, skip, isFiltered, sendingData, deletedData, editing]);
 
   return (
     <>
@@ -125,7 +164,7 @@ function Home() {
 
         {flowers && (
           <form onSubmit={handleFilter}>
-            <div className="grid grid-cols-3 gap-y-4 mb-4 w-full">
+            <div className="grid grid-cols-3 gap-8 mb-4 w-full">
               <FilterByCategory
                 categories={collectItem(flowers, "category")}
                 handleEnableToFilter={handleEnableToFilter}
@@ -189,7 +228,7 @@ function Home() {
                   <TableCell className="flex justify-end gap-3">
                     <TooltipProvider delayDuration="0">
                       <Tooltip>
-                        <TooltipTrigger>
+                        <TooltipTrigger onClick={() => handleEdit(id)}>
                           <span
                             className={buttonVariants({
                               variant: "secondary",
@@ -206,14 +245,27 @@ function Home() {
                     </TooltipProvider>
                     <TooltipProvider delayDuration="0">
                       <Tooltip>
-                        <TooltipTrigger onClick={() => handleDelete(id)}>
+                        <TooltipTrigger
+                          className={
+                            deletedData && deletedData === id && deleteLoading
+                              ? "pointer-events-none opacity-60"
+                              : ""
+                          }
+                          onClick={() => handleDelete(id)}
+                        >
                           <span
                             className={buttonVariants({
                               variant: "destructive",
                               size: "icon",
                             })}
                           >
-                            <TrashIcon />
+                            {deletedData &&
+                            deletedData === id &&
+                            deleteLoading ? (
+                              <UpdateIcon className="animate-spin" />
+                            ) : (
+                              <TrashIcon />
+                            )}
                           </span>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -242,6 +294,13 @@ function Home() {
         sendingData={sendingData}
         setSendingData={setSendingData}
       />
+      {editedData && (
+        <EditFlower
+          editedData={editedData}
+          editing={editedData}
+          setEditing={setEditing}
+        />
+      )}
     </>
   );
 }

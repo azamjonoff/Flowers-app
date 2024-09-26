@@ -22,10 +22,12 @@ import { useAppStore } from "../lib/zustand";
 import { collectItem } from "../lib/my-utils";
 import { Label } from "./ui/label";
 
-export function SelectCountry() {
+export function SelectCountry({ outsideCountry }) {
   const flowers = useAppStore((state) => state.flowers);
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState(
+    outsideCountry ? outsideCountry : ""
+  );
   let countries = flowers && collectItem(flowers, "country");
   const button = React.useRef(null);
 

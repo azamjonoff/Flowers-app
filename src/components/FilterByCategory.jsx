@@ -19,18 +19,19 @@ function FilterByCategory({ categories, handleEnableToFilter }) {
     setOpen(!open);
   };
   return (
-    <div>
-      <div>
+    <>
+      <div className="w-full">
         <Label onClick={handleFocus} className="h1">
           Sorting by category
         </Label>
         <Select
+          className="w-full"
           name="category"
           open={open}
           onOpenChange={setOpen}
           onValueChange={handleEnableToFilter}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="By Category" />
           </SelectTrigger>
           <SelectContent>
@@ -47,7 +48,7 @@ function FilterByCategory({ categories, handleEnableToFilter }) {
           </SelectContent>
         </Select>
       </div>
-    </div>
+    </>
   );
 }
 

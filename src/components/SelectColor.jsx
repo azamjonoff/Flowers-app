@@ -13,9 +13,9 @@ import {
 import { Label } from "./ui/label";
 import { useState } from "react";
 
-function SelectColor() {
+function SelectColor({ outsideColor }) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(outsideColor ? outsideColor : "");
   const flowers = useAppStore((state) => state.flowers);
 
   const handleFocus = () => {
@@ -30,6 +30,7 @@ function SelectColor() {
       </select>
       <Label onClick={handleFocus}>Select color*</Label>
       <Select
+        defaultValue={outsideColor && outsideColor}
         value={value}
         onValueChange={setValue}
         open={open}

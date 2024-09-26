@@ -4,8 +4,8 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
 
-function Summary() {
-  const [value, setValue] = useState("");
+function Summary({ text }) {
+  const [value, setValue] = useState(text ? text : "");
 
   function writer(e) {
     if (!(e.target.value.length > summaryLimit)) {
@@ -15,6 +15,7 @@ function Summary() {
       toast.warning(`You cannot enter more than ${summaryLimit} characters.`);
     }
   }
+
   return (
     <div className="flex flex-col">
       <div className="mb-1 grid w-full gap-1.5">

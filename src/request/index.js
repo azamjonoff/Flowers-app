@@ -100,3 +100,20 @@ export async function deleteFlower(token, id) {
   if (res.status === 403) throw new Error("403");
   else throw new Error("Something went wrong");
 }
+
+// edit flower
+export async function editFlower(token, flower) {
+  const res = await fetch(baseUrl + `/flowers/${flower.id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(flower),
+  });
+
+  if (res.status === 200 || res.status === 201)
+    return "Data edited successfully.";
+  if (res.status === 403) throw new Error("403");
+  else throw new Error("Something went wrong");
+}

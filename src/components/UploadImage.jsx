@@ -8,9 +8,9 @@ import { uploadImage } from "../request";
 import { toast } from "sonner";
 import { allowImageSize } from "../lib/my-utils";
 
-function UploadImage() {
+function UploadImage({ outsideImage }) {
   const [value, setValue] = useState(
-    "https://i.postimg.cc/PqdD2X3M/flower.png"
+    outsideImage ? outsideImage : "https://i.postimg.cc/PqdD2X3M/flower.png"
   );
   const urlInput = useRef(null);
 

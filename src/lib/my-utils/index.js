@@ -41,6 +41,10 @@ export const validation = (obj) => {
   return { checker, errorMessage };
 };
 
+export function findObj(array, id) {
+  return array.find((element) => element.id == id);
+}
+
 export const baseUrl = "https://json-api.uz/api/project/flowers-with-admin";
 export const allowImageSize = 5_242_880;
 export const summaryLimit = 200;
