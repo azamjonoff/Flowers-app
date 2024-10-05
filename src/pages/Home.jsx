@@ -199,7 +199,11 @@ function Home() {
 
         <Table>
           <TableCaption>
-            {loading ? "Loading..." : "Information of flowers"}
+            {loading
+              ? "Loading..."
+              : flowers?.length === 0
+              ? "There is no flowers"
+              : "Information of flowers"}
           </TableCaption>
           <TableHeader>
             <TableRow>
@@ -279,7 +283,7 @@ function Home() {
             })}
           </TableBody>
         </Table>
-        {flowers && (
+        {flowers?.length > limit && (
           <div className="mt-5">
             <MyPagination
               setSkip={setSkip}
