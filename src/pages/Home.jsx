@@ -297,7 +297,7 @@ function Home() {
       {editedData && (
         <EditFlower
           editedData={editedData}
-          editing={editedData}
+          editing={editing}
           setEditing={setEditing}
         />
       )}

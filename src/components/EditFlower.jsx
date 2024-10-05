@@ -36,7 +36,7 @@ function EditFlower({ editedData, editing, setEditing }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const result = getFormData(e.target);
-    const { checker, errorMessage } = validation(result);
+    const { errorMessage, checker } = validation(result);
     if (checker) {
       toast.warning(errorMessage);
     } else {
