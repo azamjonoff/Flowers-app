@@ -10,7 +10,7 @@ import MainLayout from "./layouts/MainLayout";
 import ProtectedRoutes from "./layouts/ProtectedRoutes";
 
 // pages
-import { Home, Login, ErrorPage } from "./pages";
+import { Home, Login, ErrorPage, Admins, Statistics } from "./pages";
 import { useAppStore } from "./lib/zustand";
 
 function App() {
@@ -28,6 +28,14 @@ function App() {
         {
           index: true,
           element: <Home />,
+        },
+        {
+          path: "/statistics",
+          element: admin ? <Statistics /> : <Navigate to="/" />,
+        },
+        {
+          path: "/admins",
+          element: admin ? <Admins /> : <Navigate to="/" />,
         },
       ],
     },

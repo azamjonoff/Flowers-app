@@ -54,7 +54,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import EditFlower from "../components/EditFLower";
-import Sidebar from "../components/Sidebar";
 
 function Home() {
   const [editing, setEditing] = useState(null);
@@ -151,55 +150,54 @@ function Home() {
 
   return (
     <div className="flex w-full !h-full">
-      <Sidebar />
-      <div className="w-full bg-slate-50 p-4">
-        <div className="py-5 w-full border p-5 bg-white">
-          <div className="flex justify-between items-center my-3">
-            <h2 className="h2">Dashboard</h2>
-            <Button
-              className="flex items-center gap-2"
-              onClick={setAddItemModal}
-              disabled={flowers ? false : true}
-            >
-              Add <PlusIcon />
-            </Button>
-          </div>
+      <div className="w-full  bg-white">
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="h2">Dashboard</h2>
+          <Button
+            className="flex items-center gap-2"
+            onClick={setAddItemModal}
+            disabled={flowers ? false : true}
+          >
+            Add <PlusIcon />
+          </Button>
+        </div>
 
-          {flowers && (
-            <form onSubmit={handleFilter}>
-              <div className="grid grid-cols-3 gap-8 mb-4 w-full">
-                <FilterByCategory
-                  categories={collectItem(flowers, "category")}
-                  handleEnableToFilter={handleEnableToFilter}
-                />
-                <FilterByCountry
-                  countries={collectItem(flowers, "country")}
-                  handleEnableToFilter={handleEnableToFilter}
-                />
-                <FilterByColor
-                  colors={collectItem(flowers, "color")}
-                  handleEnableToFilter={handleEnableToFilter}
-                />
-              </div>
-              <div className="flex gap-10 justify-end">
-                <Button
-                  variant="outline"
-                  disabled={enableToFilter}
-                  onClick={reset}
-                  type="button"
-                >
-                  Clear Filter <SymbolIcon className="ml-2" />
-                </Button>
-                <Button type="submit" disabled={enableToFilter}>
-                  Filtering <GridIcon className="ml-2" />
-                </Button>
-              </div>
-              <div className="flex justify-center mb-4">
-                <GeneralSearch handleEnableToFilter={handleEnableToFilter} />
-              </div>
-            </form>
-          )}
+        {flowers && (
+          <form onSubmit={handleFilter}>
+            <div className="grid grid-cols-3 gap-8 mb-4 w-full">
+              <FilterByCategory
+                categories={collectItem(flowers, "category")}
+                handleEnableToFilter={handleEnableToFilter}
+              />
+              <FilterByCountry
+                countries={collectItem(flowers, "country")}
+                handleEnableToFilter={handleEnableToFilter}
+              />
+              <FilterByColor
+                colors={collectItem(flowers, "color")}
+                handleEnableToFilter={handleEnableToFilter}
+              />
+            </div>
+            <div className="flex gap-10 justify-end">
+              <Button
+                variant="outline"
+                disabled={enableToFilter}
+                onClick={reset}
+                type="button"
+              >
+                Clear Filter <SymbolIcon className="ml-2" />
+              </Button>
+              <Button type="submit" disabled={enableToFilter}>
+                Filtering <GridIcon className="ml-2" />
+              </Button>
+            </div>
+            <div className="flex justify-center mb-4">
+              <GeneralSearch handleEnableToFilter={handleEnableToFilter} />
+            </div>
+          </form>
+        )}
 
+        <div className="max-h-96  h-full overflow-y-scroll">
           <Table>
             <TableCaption>
               {loading
@@ -286,17 +284,18 @@ function Home() {
               })}
             </TableBody>
           </Table>
-          {flowers?.length > limit && (
-            <div className="mt-5">
-              <MyPagination
-                setSkip={setSkip}
-                total={total}
-                pageCount={Math.ceil(total / limit)}
-                skip={skip}
-              />
-            </div>
-          )}
         </div>
+
+        {flowers?.length > limit && (
+          <div className="mt-5">
+            <MyPagination
+              setSkip={setSkip}
+              total={total}
+              pageCount={Math.ceil(total / limit)}
+              skip={skip}
+            />
+          </div>
+        )}
       </div>
       <AddNewItemModal
         sendingData={sendingData}

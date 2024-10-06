@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { panelLinks } from "../lib/my-utils";
 import parse from "html-react-parser";
 import { buttonVariants } from "./ui/button";
@@ -12,6 +12,10 @@ import { useAppStore } from "../lib/zustand";
 
 function Sidebar() {
   const sidebarOpen = useAppStore((state) => state.sidebarOpen);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const activeLink = "bg-accent text-accent-foreground";
 
   return (
     <div
@@ -26,7 +30,12 @@ function Sidebar() {
               {active && (
                 <TooltipProvider delayDuration="0">
                   <Tooltip disableHoverableContent={true}>
-                    <span className="relative inline-block w-full hover:bg-accent hover:text-accent-foreground rounded-md overflow-hidden">
+                    <span
+                      onClick={() => navigate(path)}
+                      className={`relative inline-block w-full  rounded-md overflow-hidden ${
+                        path === pathname ? activeLink : ""
+                      }`}
+                    >
                       {!sidebarOpen && (
                         <TooltipTrigger className="absolute inset-0 w-full h-full z-10 inline-block"></TooltipTrigger>
                       )}
@@ -34,7 +43,6 @@ function Sidebar() {
                         className={`${buttonVariants({
                           variant: "ghost",
                         })} w-full !justify-start gap-2 relative`}
-                        to={path}
                       >
                         <>{parse(icon)}</>
                         <span
