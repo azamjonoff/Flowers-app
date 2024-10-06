@@ -6,12 +6,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "../components/ui/label";
-import { needStatisticReport } from "../lib/my-utils";
+import { collectStatisticData, needStatisticReport } from "../lib/my-utils";
 import MyBarChart from "../components/MyBarChart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import MyPieChart from "../components/MyPieChart";
+import { useAppStore } from "../lib/zustand";
 
 function Statistics() {
-  const [value, setValue] = useState("bar");
+  const [stats, setStats] = useState(null);
+  const flowers = useAppStore((state) => state.flowers);
+  const [type, setType] = useState("bar");
+  const [value, setValue] = useState("category");
+  console.log(stats);
+
+  useEffect(() => {
+    if (flowers) {
+      setStats(() => {
+        return collectStatisticData(flowers, value);
+      });
+    }
+  }, [flowers, value]);
 
   function handleSelect() {}
 
@@ -23,7 +37,7 @@ function Statistics() {
       <div className="flex gap-5 mb-10">
         <div>
           <Label onClick={handleSelect}>Choose type for Chart</Label>
-          <Select value={value} onValueChange={(value) => setValue(value)}>
+          <Select value={type} onValueChange={(value) => setType(value)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Chart" />
             </SelectTrigger>
@@ -35,7 +49,7 @@ function Statistics() {
         </div>
         <div>
           <Label>Choose theme</Label>
-          <Select>
+          <Select value={value} onValueChange={(value) => setValue(value)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
@@ -51,8 +65,8 @@ function Statistics() {
           </Select>
         </div>
       </div>
-      {value === "bar" ? <MyBarChart /> : ""}
-      {/* <MyPieChart /> */}
+      {type === "bar" && stats && <MyBarChart stats={stats} />}
+      {type === "pie" && stats && <MyPieChart stats={stats} />}
     </div>
   );
 }

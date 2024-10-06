@@ -41,6 +41,15 @@ export const validation = (obj) => {
   return { checker, errorMessage };
 };
 
+export function collectStatisticData(array, type) {
+  let result = {};
+  for (let item of array) {
+    if (typeof result[item[type]] === "number") result[item[type]] += 1;
+    else result[item[type]] = 1;
+  }
+  return result;
+}
+
 export function findObj(array, id) {
   return array.find((element) => element.id == id);
 }
