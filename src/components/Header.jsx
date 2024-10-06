@@ -1,10 +1,13 @@
 import { NavLink } from "react-router-dom";
 import { Button } from "./ui/button";
-import { ExitIcon } from "@radix-ui/react-icons";
+import { ExitIcon, PinLeftIcon, PinRightIcon } from "@radix-ui/react-icons";
 import { useAppStore } from "../lib/zustand";
 
 function Header() {
   const setAdmin = useAppStore((state) => state.setAdmin);
+  const setSidebarOpen = useAppStore((state) => state.setSidebarOpen);
+  const sidebarOpen = useAppStore((state) => state.sidebarOpen);
+
   const logOut = () => {
     const checker = confirm(
       "Are you sure you really want to log out of the system?"
@@ -12,12 +15,22 @@ function Header() {
     checker && setAdmin(null);
   };
 
+  function handleSidebar() {
+    setSidebarOpen();
+  }
+
   return (
-    <header className="py-5 shadow-sm">
-      <div className="base-container flex items-center justify-between">
-        <NavLink className="font-medium text-xl" to="/">
-          Flower app
-        </NavLink>
+    <header className="p-5 border-b">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-5">
+          <NavLink className="font-medium text-xl" to="/">
+            Flower app
+          </NavLink>
+
+          <Button onClick={handleSidebar} variant="outline">
+            {sidebarOpen ? <PinLeftIcon /> : <PinRightIcon />}
+          </Button>
+        </div>
 
         <Button onClick={logOut}>
           Log Out

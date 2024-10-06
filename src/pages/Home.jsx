@@ -54,6 +54,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import EditFlower from "../components/EditFLower";
+import Sidebar from "../components/Sidebar";
 
 function Home() {
   const [editing, setEditing] = useState(null);
@@ -149,150 +150,153 @@ function Home() {
   }, [admin, skip, isFiltered, sendingData, deletedData, editing]);
 
   return (
-    <>
-      <div className="base-container py-5">
-        <div className="flex justify-between items-center my-3">
-          <h2 className="h2">Dashboard</h2>
-          <Button
-            className="flex items-center gap-2"
-            onClick={setAddItemModal}
-            disabled={flowers ? false : true}
-          >
-            Add <PlusIcon />
-          </Button>
-        </div>
-
-        {flowers && (
-          <form onSubmit={handleFilter}>
-            <div className="grid grid-cols-3 gap-8 mb-4 w-full">
-              <FilterByCategory
-                categories={collectItem(flowers, "category")}
-                handleEnableToFilter={handleEnableToFilter}
-              />
-              <FilterByCountry
-                countries={collectItem(flowers, "country")}
-                handleEnableToFilter={handleEnableToFilter}
-              />
-              <FilterByColor
-                colors={collectItem(flowers, "color")}
-                handleEnableToFilter={handleEnableToFilter}
-              />
-            </div>
-            <div className="flex gap-10 justify-end">
-              <Button
-                variant="outline"
-                disabled={enableToFilter}
-                onClick={reset}
-                type="button"
-              >
-                Clear Filter <SymbolIcon className="ml-2" />
-              </Button>
-              <Button type="submit" disabled={enableToFilter}>
-                Filtering <GridIcon className="ml-2" />
-              </Button>
-            </div>
-            <div className="flex justify-center mb-4">
-              <GeneralSearch handleEnableToFilter={handleEnableToFilter} />
-            </div>
-          </form>
-        )}
-
-        <Table>
-          <TableCaption>
-            {loading
-              ? "Loading..."
-              : flowers?.length === 0
-              ? "There is no flowers"
-              : "Information of flowers"}
-          </TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">ID</TableHead>
-              <TableHead>Flower name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Color</TableHead>
-              <TableHead className="text-right">Price</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {flowers?.map(({ name, id, color, category, price }) => {
-              return (
-                <TableRow key={id}>
-                  <TableCell className="font-medium">{id}</TableCell>
-                  <TableCell>{name}</TableCell>
-                  <TableCell>{category}</TableCell>
-                  <TableCell>
-                    <span
-                      style={{ backgroundColor: color }}
-                      className="block w-3 h-3 rounded-full border shadow-xl text-center"
-                    ></span>
-                  </TableCell>
-                  <TableCell className="text-right">{price}</TableCell>
-                  <TableCell className="flex justify-end gap-3">
-                    <TooltipProvider delayDuration="0">
-                      <Tooltip>
-                        <TooltipTrigger onClick={() => handleEdit(id)}>
-                          <span
-                            className={buttonVariants({
-                              variant: "secondary",
-                              size: "icon",
-                            })}
-                          >
-                            <Pencil1Icon />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Edit this item</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider delayDuration="0">
-                      <Tooltip>
-                        <TooltipTrigger
-                          className={
-                            deletedData && deletedData === id && deleteLoading
-                              ? "pointer-events-none opacity-60"
-                              : ""
-                          }
-                          onClick={() => handleDelete(id)}
-                        >
-                          <span
-                            className={buttonVariants({
-                              variant: "destructive",
-                              size: "icon",
-                            })}
-                          >
-                            {deletedData &&
-                            deletedData === id &&
-                            deleteLoading ? (
-                              <UpdateIcon className="animate-spin" />
-                            ) : (
-                              <TrashIcon />
-                            )}
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Delete this item</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-        {flowers?.length > limit && (
-          <div className="mt-5">
-            <MyPagination
-              setSkip={setSkip}
-              total={total}
-              pageCount={Math.ceil(total / limit)}
-              skip={skip}
-            />
+    <div className="flex w-full !h-full">
+      <Sidebar />
+      <div className="w-full bg-slate-50 p-4">
+        <div className="py-5 w-full border p-5 bg-white">
+          <div className="flex justify-between items-center my-3">
+            <h2 className="h2">Dashboard</h2>
+            <Button
+              className="flex items-center gap-2"
+              onClick={setAddItemModal}
+              disabled={flowers ? false : true}
+            >
+              Add <PlusIcon />
+            </Button>
           </div>
-        )}
+
+          {flowers && (
+            <form onSubmit={handleFilter}>
+              <div className="grid grid-cols-3 gap-8 mb-4 w-full">
+                <FilterByCategory
+                  categories={collectItem(flowers, "category")}
+                  handleEnableToFilter={handleEnableToFilter}
+                />
+                <FilterByCountry
+                  countries={collectItem(flowers, "country")}
+                  handleEnableToFilter={handleEnableToFilter}
+                />
+                <FilterByColor
+                  colors={collectItem(flowers, "color")}
+                  handleEnableToFilter={handleEnableToFilter}
+                />
+              </div>
+              <div className="flex gap-10 justify-end">
+                <Button
+                  variant="outline"
+                  disabled={enableToFilter}
+                  onClick={reset}
+                  type="button"
+                >
+                  Clear Filter <SymbolIcon className="ml-2" />
+                </Button>
+                <Button type="submit" disabled={enableToFilter}>
+                  Filtering <GridIcon className="ml-2" />
+                </Button>
+              </div>
+              <div className="flex justify-center mb-4">
+                <GeneralSearch handleEnableToFilter={handleEnableToFilter} />
+              </div>
+            </form>
+          )}
+
+          <Table>
+            <TableCaption>
+              {loading
+                ? "Loading..."
+                : flowers?.length === 0
+                ? "There is no flowers"
+                : "Information of flowers"}
+            </TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px]">ID</TableHead>
+                <TableHead>Flower name</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Color</TableHead>
+                <TableHead className="text-right">Price</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {flowers?.map(({ name, id, color, category, price }) => {
+                return (
+                  <TableRow key={id}>
+                    <TableCell className="font-medium">{id}</TableCell>
+                    <TableCell>{name}</TableCell>
+                    <TableCell>{category}</TableCell>
+                    <TableCell>
+                      <span
+                        style={{ backgroundColor: color }}
+                        className="block w-3 h-3 rounded-full border shadow-xl text-center"
+                      ></span>
+                    </TableCell>
+                    <TableCell className="text-right">{price}</TableCell>
+                    <TableCell className="flex justify-end gap-3">
+                      <TooltipProvider delayDuration="0">
+                        <Tooltip>
+                          <TooltipTrigger onClick={() => handleEdit(id)}>
+                            <span
+                              className={buttonVariants({
+                                variant: "secondary",
+                                size: "icon",
+                              })}
+                            >
+                              <Pencil1Icon />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Edit this item</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider delayDuration="0">
+                        <Tooltip>
+                          <TooltipTrigger
+                            className={
+                              deletedData && deletedData === id && deleteLoading
+                                ? "pointer-events-none opacity-60"
+                                : ""
+                            }
+                            onClick={() => handleDelete(id)}
+                          >
+                            <span
+                              className={buttonVariants({
+                                variant: "destructive",
+                                size: "icon",
+                              })}
+                            >
+                              {deletedData &&
+                              deletedData === id &&
+                              deleteLoading ? (
+                                <UpdateIcon className="animate-spin" />
+                              ) : (
+                                <TrashIcon />
+                              )}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Delete this item</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+          {flowers?.length > limit && (
+            <div className="mt-5">
+              <MyPagination
+                setSkip={setSkip}
+                total={total}
+                pageCount={Math.ceil(total / limit)}
+                skip={skip}
+              />
+            </div>
+          )}
+        </div>
       </div>
       <AddNewItemModal
         sendingData={sendingData}
@@ -305,7 +309,7 @@ function Home() {
           setEditing={setEditing}
         />
       )}
-    </>
+    </div>
   );
 }
 
