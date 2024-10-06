@@ -150,7 +150,7 @@ function Home() {
 
   return (
     <div className="flex w-full !h-full">
-      <div className="w-full  bg-white">
+      <div className="w-full h-full bg-white">
         <div className="flex justify-between items-center mb-3">
           <h2 className="h2">Dashboard</h2>
           <Button

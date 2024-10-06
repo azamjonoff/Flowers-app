@@ -9,11 +9,11 @@ import Sidebar from "../components/Sidebar";
 function MainLayout() {
   return (
     <>
-      <div className="min-h-screen flex flex-col">
+      <div className="h-full flex flex-col">
         <Header />
         <div className="w-full h-full flex">
           <Sidebar />
-          <main className="bg-slate-50 p-5 grow">
+          <main className="bg-slate-50 p-5 grow h-full">
             <div className="h-full w-full border bg-white p-5">
               <Outlet />
             </div>

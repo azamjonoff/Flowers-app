@@ -117,3 +117,17 @@ export async function editFlower(token, flower) {
   if (res.status === 403) throw new Error("403");
   else throw new Error("Something went wrong");
 }
+
+// get statistics
+export async function getStatistics(token) {
+  const res = await fetch(baseUrl + `/flowers`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (res.status === 403) throw new Error("403");
+  if (res.status === 200 || res.status === 201) return await res.json();
+  else throw new Error("Something went wrong");
+}
