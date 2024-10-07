@@ -42,12 +42,16 @@ export const validation = (obj) => {
 };
 
 export function collectStatisticData(array, type) {
-  let result = {};
+  let result = [];
+  let data = {};
   for (let item of array) {
-    if (typeof result[item[type]] === "number") result[item[type]] += 1;
-    else result[item[type]] = 1;
+    if (typeof data[item[type]] === "number") data[item[type]] += 1;
+    else data[item[type]] = 1;
   }
-  return result;
+  for (let key in data) {
+    result.push({ key, value: data[key] });
+  }
+  return { result, data };
 }
 
 export function findObj(array, id) {

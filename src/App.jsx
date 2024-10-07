@@ -15,6 +15,7 @@ import { useAppStore } from "./lib/zustand";
 
 function App() {
   const admin = useAppStore((state) => state.admin);
+  const flowers = useAppStore((state) => state.flowers);
   const routes = createBrowserRouter([
     {
       path: "/",
@@ -31,7 +32,7 @@ function App() {
         },
         {
           path: "/statistics",
-          element: admin ? <Statistics /> : <Navigate to="/" />,
+          element: flowers ? <Statistics /> : <Navigate to="/" />,
         },
         {
           path: "/admins",

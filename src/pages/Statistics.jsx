@@ -11,32 +11,29 @@ import MyBarChart from "../components/MyBarChart";
 import { useEffect, useState } from "react";
 import MyPieChart from "../components/MyPieChart";
 import { useAppStore } from "../lib/zustand";
+import RadioGroupDemo from "../components/RadioGroupDemo";
 
 function Statistics() {
+  const [color, setColor] = useState(1);
   const [stats, setStats] = useState(null);
   const flowers = useAppStore((state) => state.flowers);
   const [type, setType] = useState("bar");
   const [value, setValue] = useState("category");
-  console.log(stats);
 
   useEffect(() => {
-    if (flowers) {
-      setStats(() => {
-        return collectStatisticData(flowers, value);
-      });
-    }
-  }, [flowers, value]);
-
-  function handleSelect() {}
+    setStats(() => {
+      return collectStatisticData(flowers, value);
+    });
+  }, [color, value]);
 
   return (
     <div>
       <div className="flex justify-between items-center mb-3">
-        <h2 className="h2">Statistics</h2>
+        <h2 className="h2 tracking-wide font-semibold">Statistics</h2>
       </div>
       <div className="flex gap-5 mb-10">
         <div>
-          <Label onClick={handleSelect}>Choose type for Chart</Label>
+          <Label>Choose type for Chart</Label>
           <Select value={type} onValueChange={(value) => setType(value)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Chart" />
@@ -64,9 +61,22 @@ function Statistics() {
             </SelectContent>
           </Select>
         </div>
+        <div>
+          <Label className="mb-3 inline-block">Choose chart color</Label>
+          <RadioGroupDemo setColor={setColor} />
+        </div>
       </div>
-      {type === "bar" && stats && <MyBarChart stats={stats} />}
-      {type === "pie" && stats && <MyPieChart stats={stats} />}
+
+      {type === "bar" && stats && (
+        <MyBarChart chartData={stats.result} themeColor={color} />
+      )}
+      {type === "pie" && stats && (
+        <MyPieChart
+          chartData={stats.result}
+          values={stats.data}
+          themeColor={color}
+        />
+      )}
     </div>
   );
 }

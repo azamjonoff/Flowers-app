@@ -4,14 +4,6 @@ import { ChartContainer } from "@/components/ui/chart";
 
 export const description = "A pie chart with a custom label";
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
-];
-
 const chartConfig = {
   visitors: {
     label: "Visitors",
@@ -38,7 +30,7 @@ const chartConfig = {
   },
 };
 
-export default function MyPieChart() {
+export default function MyPieChart({ chartData, values, themeColor }) {
   return (
     <ChartContainer
       config={chartConfig}
@@ -46,8 +38,9 @@ export default function MyPieChart() {
     >
       <PieChart>
         <Pie
+          fill={`hsl(var(--chart-${themeColor}))`}
           data={chartData}
-          dataKey="visitors"
+          dataKey="value"
           labelLine={true}
           label={({ payload, ...props }) => {
             return (
@@ -60,18 +53,18 @@ export default function MyPieChart() {
                 dominantBaseline={props.dominantBaseline}
                 fill="hsla(var(--foreground))"
               >
-                {`${payload.visitors}`}
+                {`${payload.key}`}
               </text>
             );
           }}
-          nameKey="browser"
+          nameKey="key"
         >
           <LabelList
-            dataKey="browser"
+            dataKey="key"
             className="fill-background"
             stroke="none"
             fontSize={12}
-            formatter={(value) => chartConfig[value]?.label}
+            formatter={(value) => values[value]}
           />
         </Pie>
       </PieChart>
