@@ -21,7 +21,7 @@ function FilterByCategory({ categories, handleEnableToFilter }) {
   return (
     <>
       <div className="w-full">
-        <Label onClick={handleFocus} className="h1">
+        <Label onClick={handleFocus} className="mb-2 inline-block">
           Sorting by category
         </Label>
         <Select

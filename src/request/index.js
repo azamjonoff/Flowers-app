@@ -131,3 +131,17 @@ export async function getStatistics(token) {
   if (res.status === 200 || res.status === 201) return await res.json();
   else throw new Error("Something went wrong");
 }
+
+// get admins
+export async function getAdmins(token) {
+  const res = await fetch(baseUrl + `/users`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (res.status === 403) throw new Error("403");
+  if (res.status === 200 || res.status === 201) return await res.json();
+  else throw new Error("Something went wrong");
+}

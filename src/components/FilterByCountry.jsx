@@ -15,7 +15,7 @@ function FilterByCountry({ countries, handleEnableToFilter }) {
   return (
     <>
       <div className="w-full">
-        <Label className="h1">Sorting by country</Label>
+        <Label className="mb-2 inline-block">Sorting by country</Label>
         <Select
           name="country"
           className="w-full"

@@ -22,7 +22,7 @@ function FilterByColor({ colors, handleEnableToFilter }) {
   return (
     <>
       <div className="w-full">
-        <Label onClick={handleFocus} className="h1">
+        <Label onClick={handleFocus} className="mb-2 inline-block">
           Sorting by colors
         </Label>
         <Select
