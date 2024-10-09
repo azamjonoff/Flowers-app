@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { Button } from "./ui/button";
 import { ExitIcon, PinLeftIcon, PinRightIcon } from "@radix-ui/react-icons";
 import { useAppStore } from "../lib/zustand";
+import siteLogo from "../../public/flower.png";
 
 function Header() {
   const setAdmin = useAppStore((state) => state.setAdmin);
@@ -23,8 +24,12 @@ function Header() {
     <header className="p-5 border-b">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-5">
-          <NavLink className="font-medium text-xl" to="/">
-            Flower app
+          <NavLink
+            className="font-medium text-xl flex gap-5 items-center"
+            to="/"
+          >
+            <img src={siteLogo} alt="" width={30} height={30} />
+            {sidebarOpen && "Flower app"}
           </NavLink>
 
           <Button onClick={handleSidebar} variant="outline">
