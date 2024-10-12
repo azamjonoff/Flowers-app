@@ -37,7 +37,7 @@ function Header() {
           </Button>
         </div>
 
-        <Button onClick={logOut}>
+        <Button variant="outline" onClick={logOut}>
           Log Out
           <ExitIcon className="ml-2" />
         </Button>
