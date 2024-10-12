@@ -13,8 +13,8 @@ function MainLayout() {
         <Header />
         <div className="w-full h-full flex">
           <Sidebar />
-          <main className="bg-slate-50 p-5 grow h-full">
-            <div className="h-full w-full border bg-white p-5">
+          <main className="p-10 grow h-full">
+            <div className="h-full w-full border rounded-md bg-white p-5">
               <Outlet />
             </div>
           </main>

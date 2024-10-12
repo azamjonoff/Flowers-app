@@ -145,3 +145,20 @@ export async function getAdmins(token) {
   if (res.status === 200 || res.status === 201) return await res.json();
   else throw new Error("Something went wrong");
 }
+
+// edit admin
+export async function editAdmin(token, admin) {
+  const res = await fetch(baseUrl + `/users/${admin.id}`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(admin),
+  });
+
+  if (res.status === 200 || res.status === 201)
+    return "Data edited successfully.";
+  if (res.status === 403) throw new Error("403");
+  else throw new Error("Something went wrong");
+}

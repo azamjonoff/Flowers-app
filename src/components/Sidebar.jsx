@@ -19,7 +19,7 @@ function Sidebar() {
 
   return (
     <div
-      className={`!h-full border-r px-1 py-5 transition-all ${
+      className={`!h-full  px-1 py-5 transition-all ${
         sidebarOpen ? "w-36" : "w-16"
       }`}
     >
