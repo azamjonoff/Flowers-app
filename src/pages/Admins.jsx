@@ -26,11 +26,19 @@ import {
 } from "@/components/ui/tooltip";
 import { buttonVariants } from "../components/ui/button";
 import EditAdmin from "../components/EditAdmin";
+import { findObj } from "../lib/my-utils";
 
 function Admins() {
   const { admin, setAdmin, setAdminEditSheet } = useAppStore();
   const [admins, setAdmins] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [editedAdmin, setEditedAdmin] = useState(null);
+
+  function handleEdit(id) {
+    setAdminEditSheet();
+    const result = findObj(admins, id);
+    setEditedAdmin(result);
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -88,7 +96,7 @@ function Admins() {
                         <div className="flex !items-center gap-5">
                           <TooltipProvider delayDuration="0">
                             <Tooltip>
-                              <TooltipTrigger onClick={setAdminEditSheet}>
+                              <TooltipTrigger onClick={() => handleEdit(id)}>
                                 <span
                                   className={buttonVariants({
                                     variant: "secondary",
@@ -155,7 +163,9 @@ function Admins() {
         </ul>
       </div>
 
-      <EditAdmin />
+      {editedAdmin && (
+        <EditAdmin editedAdmin={editedAdmin} setAdmins={setAdmins} />
+      )}
     </>
   );
 }

@@ -157,8 +157,7 @@ export async function editAdmin(token, admin) {
     body: JSON.stringify(admin),
   });
 
-  if (res.status === 200 || res.status === 201)
-    return "Data edited successfully.";
+  if (res.status === 200 || res.status === 201) return await res.json();
   if (res.status === 403) throw new Error("403");
   else throw new Error("Something went wrong");
 }
