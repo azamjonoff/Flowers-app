@@ -1,13 +1,11 @@
-import { NavLink } from "react-router-dom";
-import { Button } from "./ui/button";
 import { ExitIcon, PinLeftIcon, PinRightIcon } from "@radix-ui/react-icons";
-import { useAppStore } from "../lib/zustand";
+import { NavLink } from "react-router-dom";
 import siteLogo from "../../public/flower.png";
+import { useAppStore } from "../lib/zustand";
+import { Button } from "./ui/button";
 
 function Header() {
-  const setAdmin = useAppStore((state) => state.setAdmin);
-  const setSidebarOpen = useAppStore((state) => state.setSidebarOpen);
-  const sidebarOpen = useAppStore((state) => state.sidebarOpen);
+  const { admin, setAdmin, setSidebarOpen, sidebarOpen } = useAppStore();
 
   const logOut = () => {
     const checker = confirm(
@@ -29,7 +27,12 @@ function Header() {
             to="/"
           >
             <img src={siteLogo} alt="" width={30} height={30} />
-            {sidebarOpen && "Flower app"}
+            {sidebarOpen &&
+              (admin
+                ? admin.type === "admin"
+                  ? "SuperAdmin"
+                  : "Admin"
+                : "Flower app")}
           </NavLink>
 
           <Button onClick={handleSidebar} variant="outline">

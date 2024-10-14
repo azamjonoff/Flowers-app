@@ -1,9 +1,9 @@
 // react
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // lib
-import { useAppStore } from "../lib/zustand";
 import { collectItem, findObj, limit } from "../lib/my-utils";
+import { useAppStore } from "../lib/zustand";
 
 // request
 import { deleteFlower, getFlowers, refreshToken } from "../request";
@@ -13,11 +13,11 @@ import { toast } from "sonner";
 
 //components
 import AddNewItemModal from "../components/AddNewItemModal";
-import MyPagination from "../components/MyPagination";
 import FilterByCategory from "../components/FilterByCategory";
-import FilterByCountry from "../components/FilterByCountry";
 import FilterByColor from "../components/FilterByColor";
+import FilterByCountry from "../components/FilterByCountry";
 import GeneralSearch from "../components/GeneralSearch";
+import MyPagination from "../components/MyPagination";
 
 // table
 import {
@@ -53,9 +53,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Navigate, useLocation } from "react-router-dom";
+import LoadingBar from "react-top-loading-bar";
 import EditFlower from "../components/EditFLower";
 
 function Home() {
+  const ref = useRef(null);
   const [editing, setEditing] = useState(null);
   const [editedData, setEditedData] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -66,12 +69,15 @@ function Home() {
   const [skip, setSkip] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const flowers = useAppStore((state) => state.flowers);
-  const admin = useAppStore((state) => state.admin);
-  const setAdmin = useAppStore((state) => state.setAdmin);
-  const setFlowers = useAppStore((state) => state.setFlowers);
-  const setAddItemModal = useAppStore((state) => state.setAddItemModal);
-  const setEditModal = useAppStore((state) => state.setEditModal);
+  const {
+    flowers,
+    admin,
+    setAdmin,
+    setFlowers,
+    setAddItemModal,
+    setEditModal,
+  } = useAppStore();
+  const { pathname } = useLocation();
 
   function reset() {
     setIsFiltered(null);
@@ -127,6 +133,7 @@ function Home() {
 
   // get flowers
   useEffect(() => {
+    ref?.current.continuousStart();
     setLoading(true);
     getFlowers(admin?.access_token, { skip, limit }, isFiltered)
       .then(({ data, total }) => {
@@ -145,171 +152,184 @@ function Home() {
             });
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        ref?.current.complete();
+      });
   }, [admin, skip, isFiltered, sendingData, deletedData, editing]);
 
-  return (
-    <div className="flex w-full !h-full">
-      <div className="w-full h-full bg-white">
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="h2">Dashboard</h2>
-          <Button
-            className="flex items-center gap-2"
-            onClick={setAddItemModal}
-            disabled={flowers ? false : true}
-          >
-            Add <PlusIcon />
-          </Button>
-        </div>
-
-        {flowers && (
-          <form onSubmit={handleFilter}>
-            <div className="grid grid-cols-3 gap-8 mb-4 w-full">
-              <FilterByCategory
-                categories={collectItem(flowers, "category")}
-                handleEnableToFilter={handleEnableToFilter}
-              />
-              <FilterByCountry
-                countries={collectItem(flowers, "country")}
-                handleEnableToFilter={handleEnableToFilter}
-              />
-              <FilterByColor
-                colors={collectItem(flowers, "color")}
-                handleEnableToFilter={handleEnableToFilter}
-              />
-            </div>
-            <div className="flex gap-10 justify-end">
+  if (admin) {
+    if (localStorage.getItem("lastPage") !== pathname) {
+      localStorage.setItem("lastPage", pathname);
+    }
+    return (
+      <>
+        <LoadingBar color="#18181b" ref={ref} />
+        <div className="flex w-full !h-full">
+          <div className="w-full h-full bg-white">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="h2">Dashboard</h2>
               <Button
-                variant="outline"
-                disabled={enableToFilter}
-                onClick={reset}
-                type="button"
+                className="flex items-center gap-2"
+                onClick={setAddItemModal}
+                disabled={flowers ? false : true}
               >
-                Clear Filter <SymbolIcon className="ml-2" />
-              </Button>
-              <Button type="submit" disabled={enableToFilter}>
-                Filtering <GridIcon className="ml-2" />
+                Add <PlusIcon />
               </Button>
             </div>
-            <div className="flex justify-center mb-4">
-              <GeneralSearch handleEnableToFilter={handleEnableToFilter} />
-            </div>
-          </form>
-        )}
 
-        <div className="max-h-96  h-full overflow-y-scroll">
-          <Table>
-            <TableCaption>
-              {loading
-                ? "Loading..."
-                : flowers?.length === 0
-                ? "There is no flowers"
-                : "Information of flowers"}
-            </TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">ID</TableHead>
-                <TableHead>Flower name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Color</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {flowers?.map(({ name, id, color, category, price }) => {
-                return (
-                  <TableRow key={id}>
-                    <TableCell className="font-medium">{id}</TableCell>
-                    <TableCell>{name}</TableCell>
-                    <TableCell>{category}</TableCell>
-                    <TableCell>
-                      <span
-                        style={{ backgroundColor: color }}
-                        className="block w-3 h-3 rounded-full border shadow-xl text-center"
-                      ></span>
-                    </TableCell>
-                    <TableCell className="text-right">{price}</TableCell>
-                    <TableCell className="flex justify-end gap-3">
-                      <TooltipProvider delayDuration="0">
-                        <Tooltip>
-                          <TooltipTrigger onClick={() => handleEdit(id)}>
-                            <span
-                              className={buttonVariants({
-                                variant: "secondary",
-                                size: "icon",
-                              })}
-                            >
-                              <Pencil1Icon />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Edit this item</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <TooltipProvider delayDuration="0">
-                        <Tooltip>
-                          <TooltipTrigger
-                            className={
-                              deletedData && deletedData === id && deleteLoading
-                                ? "pointer-events-none opacity-60"
-                                : ""
-                            }
-                            onClick={() => handleDelete(id)}
-                          >
-                            <span
-                              className={buttonVariants({
-                                variant: "destructive",
-                                size: "icon",
-                              })}
-                            >
-                              {deletedData &&
-                              deletedData === id &&
-                              deleteLoading ? (
-                                <UpdateIcon className="animate-spin" />
-                              ) : (
-                                <TrashIcon />
-                              )}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Delete this item</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </TableCell>
+            {flowers && (
+              <form onSubmit={handleFilter}>
+                <div className="grid grid-cols-3 gap-8 mb-4 w-full">
+                  <FilterByCategory
+                    categories={collectItem(flowers, "category")}
+                    handleEnableToFilter={handleEnableToFilter}
+                  />
+                  <FilterByCountry
+                    countries={collectItem(flowers, "country")}
+                    handleEnableToFilter={handleEnableToFilter}
+                  />
+                  <FilterByColor
+                    colors={collectItem(flowers, "color")}
+                    handleEnableToFilter={handleEnableToFilter}
+                  />
+                </div>
+                <div className="flex gap-10 justify-end">
+                  <Button
+                    variant="outline"
+                    disabled={enableToFilter}
+                    onClick={reset}
+                    type="button"
+                  >
+                    Clear Filter <SymbolIcon className="ml-2" />
+                  </Button>
+                  <Button type="submit" disabled={enableToFilter}>
+                    Filtering <GridIcon className="ml-2" />
+                  </Button>
+                </div>
+                <div className="flex justify-center mb-4">
+                  <GeneralSearch handleEnableToFilter={handleEnableToFilter} />
+                </div>
+              </form>
+            )}
+
+            <div className="max-h-96  h-full overflow-y-scroll">
+              <Table>
+                <TableCaption>
+                  {loading
+                    ? "Loading..."
+                    : flowers?.length === 0
+                    ? "There is no flowers"
+                    : "Information of flowers"}
+                </TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">ID</TableHead>
+                    <TableHead>Flower name</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Color</TableHead>
+                    <TableHead className="text-right">Price</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
+                </TableHeader>
+                <TableBody>
+                  {flowers?.map(({ name, id, color, category, price }) => {
+                    return (
+                      <TableRow key={id}>
+                        <TableCell className="font-medium">{id}</TableCell>
+                        <TableCell>{name}</TableCell>
+                        <TableCell>{category}</TableCell>
+                        <TableCell>
+                          <span
+                            style={{ backgroundColor: color }}
+                            className="block w-3 h-3 rounded-full border shadow-xl text-center"
+                          ></span>
+                        </TableCell>
+                        <TableCell className="text-right">{price}</TableCell>
+                        <TableCell className="flex justify-end gap-3">
+                          <TooltipProvider delayDuration="0">
+                            <Tooltip>
+                              <TooltipTrigger onClick={() => handleEdit(id)}>
+                                <span
+                                  className={buttonVariants({
+                                    variant: "secondary",
+                                    size: "icon",
+                                  })}
+                                >
+                                  <Pencil1Icon />
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Edit this item</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <TooltipProvider delayDuration="0">
+                            <Tooltip>
+                              <TooltipTrigger
+                                className={
+                                  deletedData &&
+                                  deletedData === id &&
+                                  deleteLoading
+                                    ? "pointer-events-none opacity-60"
+                                    : ""
+                                }
+                                onClick={() => handleDelete(id)}
+                              >
+                                <span
+                                  className={buttonVariants({
+                                    variant: "destructive",
+                                    size: "icon",
+                                  })}
+                                >
+                                  {deletedData &&
+                                  deletedData === id &&
+                                  deleteLoading ? (
+                                    <UpdateIcon className="animate-spin" />
+                                  ) : (
+                                    <TrashIcon />
+                                  )}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Delete this item</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
 
-        {flowers?.length > limit && (
-          <div className="mt-5">
-            <MyPagination
-              setSkip={setSkip}
-              total={total}
-              pageCount={Math.ceil(total / limit)}
-              skip={skip}
-            />
+            {flowers?.length > limit && (
+              <div className="mt-5">
+                <MyPagination
+                  setSkip={setSkip}
+                  total={total}
+                  pageCount={Math.ceil(total / limit)}
+                  skip={skip}
+                />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      <AddNewItemModal
-        sendingData={sendingData}
-        setSendingData={setSendingData}
-      />
-      {editedData && (
-        <EditFlower
-          editedData={editedData}
-          editing={editing}
-          setEditing={setEditing}
-        />
-      )}
-    </div>
-  );
+          <AddNewItemModal
+            sendingData={sendingData}
+            setSendingData={setSendingData}
+          />
+          {editedData && (
+            <EditFlower
+              editedData={editedData}
+              editing={editing}
+              setEditing={setEditing}
+            />
+          )}
+        </div>
+      </>
+    );
+  } else return <Navigate to="/login" />;
 }
 
 export default Home;

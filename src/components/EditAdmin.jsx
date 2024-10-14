@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetContent,
@@ -5,15 +8,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useAppStore } from "../lib/zustand";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { findObj, getFormData } from "../lib/my-utils";
-import { editAdmin, refreshToken } from "../request";
-import { useEffect, useState } from "react";
 import { UpdateIcon } from "@radix-ui/react-icons";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { getFormData } from "../lib/my-utils";
+import { useAppStore } from "../lib/zustand";
+import { editAdmin, refreshToken } from "../request";
 
 function EditAdmin({ editedAdmin, setAdmins }) {
   const { admin, setAdmin, adminEditSheet, setAdminEditSheet } = useAppStore();

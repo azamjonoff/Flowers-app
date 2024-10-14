@@ -7,32 +7,34 @@ import {
 } from "@/components/ui/card";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useEffect, useState } from "react";
-import { getAdmins, refreshToken } from "../request";
-import { useAppStore } from "../lib/zustand";
-import { toast } from "sonner";
-import {
-  LockClosedIcon,
-  LockOpen2Icon,
-  Pencil1Icon,
-  TrashIcon,
-  UpdateIcon,
-} from "@radix-ui/react-icons";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { buttonVariants } from "../components/ui/button";
+import {
+  LockClosedIcon,
+  LockOpen2Icon,
+  Pencil1Icon,
+  TrashIcon,
+} from "@radix-ui/react-icons";
+import { useEffect, useRef, useState } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import LoadingBar from "react-top-loading-bar";
+import { toast } from "sonner";
 import EditAdmin from "../components/EditAdmin";
+import { buttonVariants } from "../components/ui/button";
 import { findObj } from "../lib/my-utils";
+import { useAppStore } from "../lib/zustand";
+import { getAdmins, refreshToken } from "../request";
 
 function Admins() {
+  const ref = useRef();
   const { admin, setAdmin, setAdminEditSheet } = useAppStore();
   const [admins, setAdmins] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [editedAdmin, setEditedAdmin] = useState(null);
+  const { pathname } = useLocation();
 
   function handleEdit(id) {
     setAdminEditSheet();
@@ -41,7 +43,7 @@ function Admins() {
   }
 
   useEffect(() => {
-    setLoading(true);
+    ref?.current.continuousStart();
     getAdmins(admin?.access_token)
       .then(({ data }) => {
         setAdmins(data);
@@ -58,21 +60,21 @@ function Admins() {
             });
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        ref?.current.complete();
+      });
   }, [admin]);
 
-  return (
-    <>
-      <div>
-        {loading && (
-          <div className="flex justify-center items-center">
-            <h3 className="h3">Loading...</h3>{" "}
-            <UpdateIcon className="animate-spin ml-3 " />
-          </div>
-        )}
-        <ul className="grid grid-cols-3 gap-5">
-          {!loading &&
-            admins?.map(({ id, username, password, isActive, type }) => {
+  if (admin) {
+    if (localStorage.getItem("lastPage") !== pathname) {
+      localStorage.setItem("lastPage", pathname);
+    }
+    return (
+      <>
+        <LoadingBar color="#18181b" ref={ref} />
+        <div>
+          <ul className="grid grid-cols-3 gap-5">
+            {admins?.map(({ id, username, password, isActive, type }) => {
               return (
                 type === "user" && (
                   <li key={id}>
@@ -160,14 +162,15 @@ function Admins() {
                 )
               );
             })}
-        </ul>
-      </div>
+          </ul>
+        </div>
 
-      {editedAdmin && (
-        <EditAdmin editedAdmin={editedAdmin} setAdmins={setAdmins} />
-      )}
-    </>
-  );
+        {editedAdmin && (
+          <EditAdmin editedAdmin={editedAdmin} setAdmins={setAdmins} />
+        )}
+      </>
+    );
+  } else return <Navigate to="/login" />;
 }
 
 export default Admins;

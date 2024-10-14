@@ -2,11 +2,15 @@
 import { create } from "zustand";
 
 export const useAppStore = create((set) => ({
-  admin: JSON.parse(localStorage.getItem("admin")) || null,
+  admin: JSON.parse(localStorage.getItem("admin")),
   flowers: null,
   addItemModal: false,
   editModal: false,
   adminEditSheet: false,
+  activeSheet: {
+    open: false,
+    data: null,
+  },
   sidebarOpen: window.localStorage.getItem("sidebar") === "on" ? true : false,
   setAdmin: (admin) =>
     set(() => {
@@ -28,6 +32,11 @@ export const useAppStore = create((set) => ({
         : window.localStorage.setItem("sidebar", "on");
       return { sidebarOpen: !state.sidebarOpen };
     }),
+  setActiveSheet: (data, side) => {
+    set(() => {
+      return { activeSheet: { open: data ? true : false, side, data } };
+    });
+  },
   setAdminEditSheet: () =>
     set((state) => ({ adminEditSheet: !state.adminEditSheet })),
 }));

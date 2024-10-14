@@ -1,29 +1,17 @@
 // rrd
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // layouts
 import MainLayout from "./layouts/MainLayout";
-import ProtectedRoutes from "./layouts/ProtectedRoutes";
 
 // pages
-import { Home, Login, ErrorPage, Admins, Statistics } from "./pages";
-import { useAppStore } from "./lib/zustand";
+import { Admins, ErrorPage, Home, Login, Statistics } from "./pages";
 
 function App() {
-  const admin = useAppStore((state) => state.admin);
-  const flowers = useAppStore((state) => state.flowers);
   const routes = createBrowserRouter([
     {
       path: "/",
-      element: (
-        <ProtectedRoutes admin={admin}>
-          <MainLayout />
-        </ProtectedRoutes>
-      ),
+      element: <MainLayout />,
       errorElement: <ErrorPage />,
       children: [
         {
@@ -32,17 +20,17 @@ function App() {
         },
         {
           path: "/statistics",
-          element: flowers ? <Statistics /> : <Navigate to="/" />,
+          element: <Statistics />,
         },
         {
           path: "/admins",
-          element: admin ? <Admins /> : <Navigate to="/" />,
+          element: <Admins />,
         },
       ],
     },
     {
       path: "/login",
-      element: admin ? <Navigate to="/" /> : <Login />,
+      element: <Login />,
     },
   ]);
   return <RouterProvider router={routes} />;
