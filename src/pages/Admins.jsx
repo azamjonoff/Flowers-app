@@ -19,19 +19,22 @@ import {
   Pencil1Icon,
   TrashIcon,
 } from "@radix-ui/react-icons";
+import { PlusIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
 import { toast } from "sonner";
 import EditAdmin from "../components/EditAdmin";
-import { buttonVariants } from "../components/ui/button";
+import { Button, buttonVariants } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
 import { findObj } from "../lib/my-utils";
 import { useAppStore } from "../lib/zustand";
 import { getAdmins, refreshToken } from "../request";
 
 function Admins() {
   const ref = useRef();
-  const { admin, setAdmin, setAdminEditSheet } = useAppStore();
+  const { admin, setAdmin, setAdminEditSheet, setActiveSheet } = useAppStore();
   const [admins, setAdmins] = useState(null);
   const [editedAdmin, setEditedAdmin] = useState(null);
   const { pathname } = useLocation();
@@ -40,6 +43,47 @@ function Admins() {
     setAdminEditSheet();
     const result = findObj(admins, id);
     setEditedAdmin(result);
+  }
+
+  function handleAddAdmin() {
+    setActiveSheet(
+      {
+        title: "Add new admin",
+        description:
+          "You can add a new admin by entering new admin information",
+        children: (
+          <form className="w-full">
+            <div className="mb-2">
+              <Label htmlFor="username">Username*</Label>
+              <Input
+                id="username"
+                name="username"
+                placeholder="Enter username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="password">Password*</Label>
+              <Input
+                id="password"
+                name="password"
+                placeholder="Enter password"
+              />
+            </div>
+            <div className="flex justify-end gap-5 mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setActiveSheet(null, "top")}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Submit</Button>
+            </div>
+          </form>
+        ),
+      },
+      "top"
+    );
   }
 
   useEffect(() => {
@@ -72,7 +116,18 @@ function Admins() {
     return (
       <>
         <LoadingBar color="#18181b" ref={ref} />
-        <div>
+        <div className="flex flex-col w-full">
+          <div className="flex justify-between items-center p-2">
+            <h2 className="h2">Admins</h2>
+            <Button
+              className="flex items-center gap-2"
+              onClick={handleAddAdmin}
+              disabled={!admins}
+            >
+              Add admin <PlusIcon />
+            </Button>
+          </div>
+          <div className="w-full h-[2px] bg-slate-100 my-7"></div>
           <ul className="grid grid-cols-3 gap-5">
             {admins?.map(({ id, username, password, isActive, type }) => {
               return (

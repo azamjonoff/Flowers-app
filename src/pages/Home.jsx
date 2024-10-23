@@ -47,6 +47,7 @@ import { PlusIcon } from "lucide-react";
 import { getFormData } from "../lib/my-utils";
 
 // tooltip
+import { Input } from "@/components/ui/input";
 import {
   Tooltip,
   TooltipContent,
@@ -56,6 +57,13 @@ import {
 import { Navigate, useLocation } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
 import EditFlower from "../components/EditFLower";
+import LifeTime from "../components/LifeTime";
+import SelectCategory from "../components/SelectCategory";
+import SelectColor from "../components/SelectColor";
+import { SelectCountry } from "../components/SelectCountry";
+import Summary from "../components/Summary";
+import { Label } from "../components/ui/label";
+import UploadImage from "../components/UploadImage";
 
 function Home() {
   const ref = useRef(null);
@@ -69,14 +77,8 @@ function Home() {
   const [skip, setSkip] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const {
-    flowers,
-    admin,
-    setAdmin,
-    setFlowers,
-    setAddItemModal,
-    setEditModal,
-  } = useAppStore();
+  const { flowers, admin, setAdmin, setFlowers, setEditModal, setActiveSheet } =
+    useAppStore();
   const { pathname } = useLocation();
 
   function reset() {
@@ -102,6 +104,78 @@ function Home() {
     setEditModal();
     const result = findObj(flowers, id);
     setEditedData(result);
+  }
+
+  function handleAddItem() {
+    setActiveSheet(
+      {
+        title: "Add information",
+        description:
+          "By entering the data correctly into the inputs, new information can be added.",
+        children: (
+          <form>
+            <div className="flex flex-col gap-2 max-h-80 overflow-y-auto px-2">
+              <div>
+                <Label htmlFor="name">Flower name*</Label>
+                <Input
+                  id="name"
+                  placeholder="Enter flower name"
+                  name="name"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="mt-2">
+                <Label htmlFor="price">Flower price* (uzs)</Label>
+                <Input
+                  min="0"
+                  id="price"
+                  placeholder="Enter flower price"
+                  name="price"
+                  autoComplete="off"
+                  type="number"
+                />
+              </div>
+              <div className="flex items-center gap-5 mt-2">
+                <SelectCategory />
+                <SelectColor />
+              </div>
+
+              <SelectCountry />
+
+              <Summary />
+              <div className="grid w-full items-center gap-1.5">
+                <Label htmlFor="smell">Smell*</Label>
+                <Input
+                  className="!w-full"
+                  type="text"
+                  id="smell"
+                  placeholder="Enter the scent of the flower"
+                  name="smell"
+                />
+              </div>
+
+              <LifeTime />
+
+              <UploadImage />
+            </div>
+
+            <div className="flex justify-between items-center mt-3">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setActiveSheet(null, "right")}
+              >
+                Cancel
+              </Button>
+              <Button disabled={loading} type="submit">
+                {loading ? <UpdateIcon className="animate-spin" /> : "Submit"}
+              </Button>
+            </div>
+          </form>
+        ),
+      },
+      "right"
+    );
   }
 
   // Delete flower
@@ -171,7 +245,7 @@ function Home() {
               <h2 className="h2">Dashboard</h2>
               <Button
                 className="flex items-center gap-2"
-                onClick={setAddItemModal}
+                onClick={handleAddItem}
                 disabled={flowers ? false : true}
               >
                 Add <PlusIcon />
