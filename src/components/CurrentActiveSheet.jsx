@@ -21,7 +21,7 @@ function CurrentActiveSheet() {
         className={
           activeSheet.side === "top" || activeSheet.side === "bottom"
             ? "h-2/4"
-            : ""
+            : "!w-full !max-w-[calc(100%-224px)]"
         }
         side={activeSheet.side}
       >

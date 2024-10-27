@@ -4,9 +4,6 @@ import { create } from "zustand";
 export const useAppStore = create((set) => ({
   admin: JSON.parse(localStorage.getItem("admin")),
   flowers: null,
-  addItemModal: false,
-  editModal: false,
-  adminEditSheet: false,
   activeSheet: {
     open: false,
     data: null,
@@ -18,13 +15,11 @@ export const useAppStore = create((set) => ({
         localStorage.setItem("admin", JSON.stringify(admin));
       } else {
         localStorage.removeItem("admin");
+        localStorage.removeItem("lastPage");
       }
       return { admin, flowers: null };
     }),
   setFlowers: (flowers) => set(() => ({ flowers })),
-  setAddItemModal: () =>
-    set((state) => ({ addItemModal: !state.addItemModal })),
-  setEditModal: () => set((state) => ({ editModal: !state.editModal })),
   setSidebarOpen: () =>
     set((state) => {
       state.sidebarOpen
@@ -37,6 +32,4 @@ export const useAppStore = create((set) => ({
       return { activeSheet: { open: data ? true : false, side, data } };
     });
   },
-  setAdminEditSheet: () =>
-    set((state) => ({ adminEditSheet: !state.adminEditSheet })),
 }));

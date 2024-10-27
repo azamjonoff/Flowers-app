@@ -7,7 +7,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { limit } from "../lib/my-utils";
+import { limit } from "../lib/constants";
 
 export default function MyPagination({ setSkip, total, pageCount, skip }) {
   return (

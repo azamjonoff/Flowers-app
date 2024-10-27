@@ -1,12 +1,12 @@
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Button, buttonVariants } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlusCircledIcon, PlusIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { useEffect, useRef, useState } from "react";
-import { uploadImage } from "../request";
 import { toast } from "sonner";
-import { allowImageSize } from "../lib/my-utils";
+import { allowImageSize } from "../lib/constants";
+import { uploadImage } from "../request";
+import { Button, buttonVariants } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 function UploadImage({ outsideImage }) {
   const [value, setValue] = useState(

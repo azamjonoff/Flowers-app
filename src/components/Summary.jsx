@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { summaryLimit } from "../lib/my-utils";
+import { toast } from "sonner";
+import { summaryLimit } from "../lib/constants";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
-import { toast } from "sonner";
 
 function Summary({ text }) {
   const [value, setValue] = useState(text ? text : "");

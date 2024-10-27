@@ -18,41 +18,101 @@ import {
   LockOpen2Icon,
   Pencil1Icon,
   TrashIcon,
+  UpdateIcon,
 } from "@radix-ui/react-icons";
 import { PlusIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
 import { toast } from "sonner";
-import EditAdmin from "../components/EditAdmin";
 import { Button, buttonVariants } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { findObj } from "../lib/my-utils";
+import { findObj, getFormData } from "../lib/my-utils";
 import { useAppStore } from "../lib/zustand";
-import { getAdmins, refreshToken } from "../request";
+import { deleteAdmin, editAdmin, getAdmins, refreshToken } from "../request";
 
 function Admins() {
-  const ref = useRef();
-  const { admin, setAdmin, setAdminEditSheet, setActiveSheet } = useAppStore();
-  const [admins, setAdmins] = useState(null);
-  const [editedAdmin, setEditedAdmin] = useState(null);
-  const { pathname } = useLocation();
+  const [admins, setAdmins] = useState(null),
+    [loading, setLoading] = useState(false),
+    [addLoading, setAddLoading] = useState(false),
+    [updateLoading, setUpdateLoading] = useState(false),
+    [deleteLoading, setDeleteLoading] = useState(false),
+    [addingData, setAddingData] = useState(null),
+    [updatingData, setUpdatingData] = useState(null),
+    [deletingData, setDeletingData] = useState(null),
+    ref = useRef(),
+    { admin, setActiveSheet, setAdmin } = useAppStore(),
+    { pathname } = useLocation();
 
   function handleEdit(id) {
-    setAdminEditSheet();
-    const result = findObj(admins, id);
-    setEditedAdmin(result);
+    const whichAdmin = findObj(admins, id);
+
+    function handleSubmit(e) {
+      const result = getFormData(e.target);
+      setUpdatingData({ ...result, id });
+    }
+    setActiveSheet(
+      {
+        title: "Edit new admin",
+        description: "You can edit admin by entering admin information",
+        children: (
+          <form onSubmit={handleSubmit} className="w-full">
+            <div className="mb-2">
+              <Label htmlFor="username">Username*</Label>
+              <Input
+                defaultValue={whichAdmin.username}
+                id="username"
+                name="username"
+                placeholder="Enter username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="password">Password*</Label>
+              <Input
+                defaultValue={whichAdmin.password}
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter password"
+              />
+            </div>
+            <div className="flex justify-end gap-5 mt-4">
+              <Button
+                disabled={updateLoading}
+                type="button"
+                variant="outline"
+                onClick={() => setActiveSheet(null, "bottom")}
+              >
+                Cancel
+              </Button>
+              <Button disabled={updateLoading} type="submit">
+                {updateLoading ? (
+                  <UpdateIcon className="animate-spin" />
+                ) : (
+                  "Submit"
+                )}
+              </Button>
+            </div>
+          </form>
+        ),
+      },
+      "bottom"
+    );
   }
 
   function handleAddAdmin() {
+    function handleSubmit(e) {
+      const result = getFormData(e.target);
+      setAddingData(result);
+    }
     setActiveSheet(
       {
         title: "Add new admin",
         description:
           "You can add a new admin by entering new admin information",
         children: (
-          <form className="w-full">
+          <form onSubmit={handleSubmit} className="w-full">
             <div className="mb-2">
               <Label htmlFor="username">Username*</Label>
               <Input
@@ -71,13 +131,20 @@ function Admins() {
             </div>
             <div className="flex justify-end gap-5 mt-4">
               <Button
+                disabled={addLoading}
                 type="button"
                 variant="outline"
                 onClick={() => setActiveSheet(null, "top")}
               >
                 Cancel
               </Button>
-              <Button type="submit">Submit</Button>
+              <Button type="submit" disabled={addLoading}>
+                {addLoading ? (
+                  <UpdateIcon className="animate-spin" />
+                ) : (
+                  "Submit"
+                )}
+              </Button>
             </div>
           </form>
         ),
@@ -86,28 +153,123 @@ function Admins() {
     );
   }
 
+  function handleDelete(id) {
+    const confirmation = confirm("Really you want to this admin delete?");
+    if (confirmation) setDeletingData(id);
+  }
+
+  /* get admins */
   useEffect(() => {
+    setLoading(true);
     ref?.current.continuousStart();
-    getAdmins(admin?.access_token)
+    getAdmins()
       .then(({ data }) => {
         setAdmins(data);
       })
       .catch(({ message }) => {
         if (message === "403") {
-          refreshToken(admin?.refresh_token)
+          refreshToken()
             .then(({ access_token }) => {
-              setAdmin(...admin, access_token);
+              setAdmin({ ...admin, access_token });
             })
-            .catch(() => {
-              toast.info("Please logIn again");
+            .catch(({ message }) => {
               setAdmin(null);
+              toast.info(message);
             });
-        }
+        } else toast.error(message);
       })
       .finally(() => {
+        setLoading(false);
         ref?.current.complete();
       });
   }, [admin]);
+
+  // add admin
+  useEffect(() => {
+    if (addingData) {
+      setAddLoading(true);
+      addAdmin(addingData)
+        .then((message) => {
+          toast.success(message);
+          setAddingData(null);
+        })
+        .catch(({ message }) => {
+          if (message === "403") {
+            refreshToken()
+              .then(({ access_token }) => {
+                setAdmin({ ...admin, access_token });
+              })
+              .catch(({ message }) => {
+                setAdmin(null);
+                toast.info(message);
+              });
+          } else toast.error(message);
+        })
+        .finally(() => {
+          setAddLoading(false);
+        });
+    }
+  }, [addingData, admin]);
+
+  // update data
+  useEffect(() => {
+    if (updatingData) {
+      setUpdateLoading(true);
+      editAdmin(updatingData)
+        .then((data) => {
+          const index = admins.find(
+            (admin, index) => admin.id === updatingData.id && index
+          );
+          setAdmins((prev) => {
+            prev[index] = data;
+            return prev;
+          });
+        })
+        .catch(({ message }) => {
+          if (message === "403") {
+            refreshToken()
+              .then(({ access_token }) => {
+                setAdmin({ ...admin, access_token });
+              })
+              .catch(({ message }) => {
+                toast.info(message);
+                setAdmin(null);
+              });
+          } else toast.error(message);
+        })
+        .finally(() => {
+          setUpdatingData(null);
+          setUpdateLoading(false);
+        });
+    }
+  }, [updatingData, admin]);
+
+  // delete admin
+  useEffect(() => {
+    if (deletingData) {
+      setDeleteLoading(true);
+      deleteAdmin(deletingData)
+        .then((message) => {
+          setDeletingData(null);
+          toast.success(message);
+        })
+        .catch(({ message }) => {
+          if (message === "403") {
+            refreshToken()
+              .then(({ access_token }) => {
+                setAdmin({ ...admin, access_token });
+              })
+              .catch(({ message }) => {
+                toast.info(message);
+                setAdmin(null);
+              });
+          } else toast.error(message);
+        })
+        .finally(() => {
+          setDeleteLoading(false);
+        });
+    }
+  }, [deletingData, admin]);
 
   if (admin) {
     if (localStorage.getItem("lastPage") !== pathname) {
@@ -170,14 +332,21 @@ function Admins() {
                           </TooltipProvider>
                           <TooltipProvider delayDuration="0">
                             <Tooltip>
-                              <TooltipTrigger>
+                              <TooltipTrigger
+                                disabled={deleteLoading}
+                                onClick={() => handleDelete(id)}
+                              >
                                 <span
                                   className={buttonVariants({
                                     variant: "destructive",
                                     size: "icon",
                                   })}
                                 >
-                                  <TrashIcon />
+                                  {deleteLoading ? (
+                                    <UpdateIcon className="animate-spin" />
+                                  ) : (
+                                    <TrashIcon />
+                                  )}
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent>
@@ -219,10 +388,6 @@ function Admins() {
             })}
           </ul>
         </div>
-
-        {editedAdmin && (
-          <EditAdmin editedAdmin={editedAdmin} setAdmins={setAdmins} />
-        )}
       </>
     );
   } else return <Navigate to="/login" />;

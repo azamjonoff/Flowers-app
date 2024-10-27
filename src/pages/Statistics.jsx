@@ -12,7 +12,8 @@ import MyBarChart from "../components/MyBarChart";
 import MyPieChart from "../components/MyPieChart";
 import RadioGroupDemo from "../components/RadioGroupDemo";
 import { Label } from "../components/ui/label";
-import { collectStatisticData, needStatisticReport } from "../lib/my-utils";
+import { needStatisticReport } from "../lib/constants";
+import { collectStatisticData } from "../lib/my-utils";
 import { useAppStore } from "../lib/zustand";
 
 function Statistics() {

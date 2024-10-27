@@ -1,8 +1,8 @@
 // react
 import { useEffect, useRef, useState } from "react";
 
-// lib
-import { collectItem, findObj, limit } from "../lib/my-utils";
+// lib collectItem, findObj, limit
+
 import { useAppStore } from "../lib/zustand";
 
 // request
@@ -12,7 +12,6 @@ import { deleteFlower, getFlowers, refreshToken } from "../request";
 import { toast } from "sonner";
 
 //components
-import AddNewItemModal from "../components/AddNewItemModal";
 import FilterByCategory from "../components/FilterByCategory";
 import FilterByColor from "../components/FilterByColor";
 import FilterByCountry from "../components/FilterByCountry";
@@ -44,7 +43,7 @@ import {
 import { PlusIcon } from "lucide-react";
 
 // lib
-import { getFormData } from "../lib/my-utils";
+import { collectItem, getFormData } from "../lib/my-utils";
 
 // tooltip
 import { Input } from "@/components/ui/input";
@@ -56,7 +55,6 @@ import {
 } from "@/components/ui/tooltip";
 import { Navigate, useLocation } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
-import EditFlower from "../components/EditFLower";
 import LifeTime from "../components/LifeTime";
 import SelectCategory from "../components/SelectCategory";
 import SelectColor from "../components/SelectColor";
@@ -64,6 +62,7 @@ import { SelectCountry } from "../components/SelectCountry";
 import Summary from "../components/Summary";
 import { Label } from "../components/ui/label";
 import UploadImage from "../components/UploadImage";
+import { limit } from "../lib/constants";
 
 function Home() {
   const ref = useRef(null);
@@ -77,7 +76,7 @@ function Home() {
   const [skip, setSkip] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { flowers, admin, setAdmin, setFlowers, setEditModal, setActiveSheet } =
+  const { flowers, admin, setAdmin, setFlowers, setActiveSheet } =
     useAppStore();
   const { pathname } = useLocation();
 
@@ -101,9 +100,78 @@ function Home() {
   }
 
   function handleEdit(id) {
-    setEditModal();
     const result = findObj(flowers, id);
     setEditedData(result);
+    setActiveSheet({
+      title: "Edit information",
+      description:
+        "It is necessary to enter correct information into the inputs to edit the data.",
+      children: (
+        <form>
+          <div className="flex flex-col gap-2 max-h-80 overflow-y-auto px-2">
+            <div>
+              <Label htmlFor="name">Flower name*</Label>
+              <Input
+                id="name"
+                placeholder="Enter flower name"
+                name="name"
+                autoComplete="off"
+                defaultValue={editedData.name}
+              />
+            </div>
+            <div className="mt-2">
+              <Label htmlFor="price">Flower price* (uzs)</Label>
+              <Input
+                min="0"
+                id="price"
+                placeholder="Enter flower price"
+                name="price"
+                autoComplete="off"
+                type="number"
+                defaultValue={editedData.price}
+              />
+            </div>
+            <div className="flex items-center gap-5 mt-2">
+              <SelectCategory outsideCategory={editedData.category} />
+              <SelectColor outsideColor={editedData.color} />
+            </div>
+
+            <SelectCountry outsideCountry={editedData.country} />
+
+            <Summary text={editedData.summary} />
+
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="smell">Smell*</Label>
+              <Input
+                className="!w-full"
+                type="text"
+                id="smell"
+                placeholder="Enter the scent of the flower"
+                name="smell"
+                defaultValue={editedData.smell}
+              />
+            </div>
+
+            <LifeTime time={editedData.lifetime} />
+
+            <UploadImage outsideImage={editedData.imgUrl} />
+          </div>
+
+          <div className="flex justify-between items-center mt-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setActiveSheet(null, "right")}
+            >
+              Cancel
+            </Button>
+            <Button disabled={loading} type="submit">
+              {loading ? <UpdateIcon className="animate-spin" /> : "Submit"}
+            </Button>
+          </div>
+        </form>
+      ),
+    });
   }
 
   function handleAddItem() {
@@ -113,51 +181,49 @@ function Home() {
         description:
           "By entering the data correctly into the inputs, new information can be added.",
         children: (
-          <form>
-            <div className="flex flex-col gap-2 max-h-80 overflow-y-auto px-2">
-              <div>
-                <Label htmlFor="name">Flower name*</Label>
-                <Input
-                  id="name"
-                  placeholder="Enter flower name"
-                  name="name"
-                  autoComplete="off"
-                />
-              </div>
-              <div className="mt-2">
-                <Label htmlFor="price">Flower price* (uzs)</Label>
-                <Input
-                  min="0"
-                  id="price"
-                  placeholder="Enter flower price"
-                  name="price"
-                  autoComplete="off"
-                  type="number"
-                />
-              </div>
-              <div className="flex items-center gap-5 mt-2">
-                <SelectCategory />
-                <SelectColor />
-              </div>
-
-              <SelectCountry />
-
-              <Summary />
-              <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="smell">Smell*</Label>
-                <Input
-                  className="!w-full"
-                  type="text"
-                  id="smell"
-                  placeholder="Enter the scent of the flower"
-                  name="smell"
-                />
-              </div>
-
-              <LifeTime />
-
-              <UploadImage />
+          <form className="flex flex-col gap-2">
+            <div>
+              <Label htmlFor="name">Flower name*</Label>
+              <Input
+                id="name"
+                placeholder="Enter flower name"
+                name="name"
+                autoComplete="off"
+              />
             </div>
+            <div className="mt-2">
+              <Label htmlFor="price">Flower price* (uzs)</Label>
+              <Input
+                min="0"
+                id="price"
+                placeholder="Enter flower price"
+                name="price"
+                autoComplete="off"
+                type="number"
+              />
+            </div>
+            <div className="flex items-center gap-5 mt-2">
+              <SelectCategory />
+              <SelectColor />
+            </div>
+
+            <SelectCountry />
+
+            <Summary />
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="smell">Smell*</Label>
+              <Input
+                className="!w-full"
+                type="text"
+                id="smell"
+                placeholder="Enter the scent of the flower"
+                name="smell"
+              />
+            </div>
+
+            <LifeTime />
+
+            <UploadImage />
 
             <div className="flex justify-between items-center mt-3">
               <Button
@@ -241,7 +307,7 @@ function Home() {
         <LoadingBar color="#18181b" ref={ref} />
         <div className="flex w-full !h-full">
           <div className="w-full h-full bg-white">
-            <div className="flex justify-between items-center mb-3">
+            <div className="flex justify-between items-center">
               <h2 className="h2">Dashboard</h2>
               <Button
                 className="flex items-center gap-2"
@@ -251,6 +317,8 @@ function Home() {
                 Add <PlusIcon />
               </Button>
             </div>
+
+            <div className="w-full h-[2px] bg-slate-100 my-7"></div>
 
             {flowers && (
               <form onSubmit={handleFilter}>
@@ -389,17 +457,6 @@ function Home() {
               </div>
             )}
           </div>
-          <AddNewItemModal
-            sendingData={sendingData}
-            setSendingData={setSendingData}
-          />
-          {editedData && (
-            <EditFlower
-              editedData={editedData}
-              editing={editing}
-              setEditing={setEditing}
-            />
-          )}
         </div>
       </>
     );

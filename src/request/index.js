@@ -1,22 +1,21 @@
 // lib
-import { baseUrl } from "../lib/my-utils";
+import { baseUrl, errorMessages, successMessages } from "../lib/constants";
 
 // refresh-token
-export async function refreshToken(token) {
+async function refreshToken() {
+  const refresh_token = JSON.parse(localStorage.getItem("admin")).refresh_token;
   const res = await fetch(baseUrl + "/auth/refresh-token", {
     method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({ refresh_token: token }),
+    body: JSON.stringify({ refresh_token }),
   });
 
   if (res.status === 200 || res.status === 201) return await res.json();
   if (res.status === 403) throw new Error(403);
+  else throw new Error(errorMessages.somethingWentWrong);
 }
 
 // admin post
-export async function postData(data) {
+async function postData(data) {
   const res = await fetch(baseUrl + "/auth/login", {
     method: "POST",
     headers: {
@@ -26,13 +25,13 @@ export async function postData(data) {
   });
 
   if (res.status === 400)
-    throw new Error("Username or password is not correct");
+    throw new Error(errorMessages.passwordOrUsernameWrong);
   if (res.status === 200 || res.status === 201) return await res.json();
-  else throw new Error("Something went wrong");
+  else throw new Error(errorMessages.somethingWentWrong);
 }
 
 // flowers
-export async function getFlowers(token, { skip, limit }, isFiltered) {
+async function getFlowers(token, { skip, limit }, isFiltered) {
   const query = new URLSearchParams(`skip=${skip}&limit=${limit}`);
 
   if (isFiltered) {
@@ -52,11 +51,11 @@ export async function getFlowers(token, { skip, limit }, isFiltered) {
 
   if (res.status === 403) throw new Error(403);
   if (res.status === 200 || res.status === 201) return await res.json();
-  else throw new Error("Something went wrong");
+  else throw new Error(errorMessages.somethingWentWrong);
 }
 
 // image local
-export async function uploadImage(image) {
+async function uploadImage(image) {
   const formData = new FormData();
   formData.append("file", image);
   const res = await fetch(baseUrl + "/upload", {
@@ -65,11 +64,12 @@ export async function uploadImage(image) {
   });
 
   if (res.status === 200 || res.status === 201) return res.text();
-  else throw new Error("Something went wrong");
+  else throw new Error(errorMessages.somethingWentWrong);
 }
 
 // send flower
-export async function sendFlower(token, flower) {
+async function sendFlower(flower) {
+  const token = JSON.parse(localStorage.getItem("admin")).access_token;
   const res = await fetch(baseUrl + "/flowers", {
     method: "POST",
     headers: {
@@ -80,13 +80,14 @@ export async function sendFlower(token, flower) {
   });
 
   if (res.status === 200 || res.status === 201)
-    return "Data added successfully.";
+    return successMessages.dataAddedSucc;
   if (res.status === 403) throw new Error("403");
-  else throw new Error("Something went wrong");
+  else throw new Error(errorMessages.somethingWentWrong);
 }
 
 // delete flower
-export async function deleteFlower(token, id) {
+async function deleteFlower(id) {
+  const token = JSON.parse(localStorage.getItem("admin")).access_token;
   const res = await fetch(baseUrl + `/flowers/${id}`, {
     method: "DELETE",
     headers: {
@@ -96,13 +97,14 @@ export async function deleteFlower(token, id) {
   });
 
   if (res.status === 200 || res.status === 201)
-    return "Data deleted successfully.";
+    return successMessages.dataDeletedSucc;
   if (res.status === 403) throw new Error("403");
-  else throw new Error("Something went wrong");
+  else throw new Error(errorMessages.somethingWentWrong);
 }
 
 // edit flower
-export async function editFlower(token, flower) {
+async function editFlower(flower) {
+  const token = JSON.parse(localStorage.getItem("admin")).access_token;
   const res = await fetch(baseUrl + `/flowers/${flower.id}`, {
     method: "PATCH",
     headers: {
@@ -113,27 +115,22 @@ export async function editFlower(token, flower) {
   });
 
   if (res.status === 200 || res.status === 201)
-    return "Data edited successfully.";
+    return successMessages.dataEditedSucc;
   if (res.status === 403) throw new Error("403");
-  else throw new Error("Something went wrong");
+  else throw new Error(errorMessages.somethingWentWrong);
 }
 
 // get statistics
-export async function getStatistics(token) {
-  const res = await fetch(baseUrl + `/flowers`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+async function getStatistics() {
+  const res = await fetch(baseUrl + `/flowers`);
 
-  if (res.status === 403) throw new Error("403");
   if (res.status === 200 || res.status === 201) return await res.json();
-  else throw new Error("Something went wrong");
+  else throw new Error(errorMessages.somethingWentWrong);
 }
 
 // get admins
-export async function getAdmins(token) {
+async function getAdmins() {
+  const token = JSON.parse(localStorage.getItem("admin")).access_token;
   const res = await fetch(baseUrl + `/users`, {
     headers: {
       "Content-Type": "application/json",
@@ -143,11 +140,12 @@ export async function getAdmins(token) {
 
   if (res.status === 403) throw new Error("403");
   if (res.status === 200 || res.status === 201) return await res.json();
-  else throw new Error("Something went wrong");
+  else throw new Error(errorMessages.somethingWentWrong);
 }
 
 // edit admin
-export async function editAdmin(token, admin) {
+async function editAdmin(admin) {
+  const token = JSON.parse(localStorage.getItem("admin")).access_token;
   const res = await fetch(baseUrl + `/users/${admin.id}`, {
     method: "PATCH",
     headers: {
@@ -157,7 +155,58 @@ export async function editAdmin(token, admin) {
     body: JSON.stringify(admin),
   });
 
-  if (res.status === 200 || res.status === 201) return await res.json();
+  if (res.status === 200 || res.status === 201)
+    return successMessages.editedAdmin;
   if (res.status === 403) throw new Error("403");
-  else throw new Error("Something went wrong");
+  else throw new Error(errorMessages.somethingWentWrong);
 }
+
+// add admin
+async function addAdmin(admin) {
+  const token = JSON.parse(localStorage.getItem("admin")).access_token;
+  const res = await fetch(baseUrl + "/users", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(admin),
+  });
+
+  if (res.status === 200 || res.status === 201)
+    return successMessages.addedAdmin;
+  if (res.status === 403) throw new Error("403");
+  else throw new Error(errorMessages.somethingWentWrong);
+}
+
+// delete admin
+async function deleteAdmin(id) {
+  const token = JSON.parse(localStorage.getItem("admin")).access_token;
+  const res = await fetch(baseUrl + `/users/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (res.status === 200 || res.status === 201)
+    return successMessages.deletedAdmin;
+  if (res.status === 403) throw new Error("403");
+  else throw new Error(errorMessages.somethingWentWrong);
+}
+
+export {
+  addAdmin,
+  deleteAdmin,
+  deleteFlower,
+  editAdmin,
+  editFlower,
+  getAdmins,
+  getFlowers,
+  getStatistics,
+  postData,
+  refreshToken,
+  sendFlower,
+  uploadImage,
+};
